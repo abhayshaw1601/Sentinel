@@ -921,6 +921,12 @@
     background: #f0fdf4;
 }
 
+.icon-btn-sm.warning:hover {
+    border-color: #f59e0b;
+    color: #f59e0b;
+    background: #fffbeb;
+}
+
 /* Staff Table Styles */
 .staff-name-cell {
     display: flex;
