@@ -4,6 +4,8 @@
     min-height: 100vh;
     background: var(--bg-primary);
     padding: var(--spacing-6);
+    padding-top: 80px;
+    /* Account for fixed navbar (64px) + spacing */
     font-family: 'Inter', sans-serif;
 }
 
@@ -366,7 +368,7 @@
     outline: none;
 }
 
-.section-search input:focus ~ .search-icon {
+.section-search input:focus~.search-icon {
     color: var(--color-primary);
 }
 

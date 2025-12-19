@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { Lock, AlertCircle } from 'lucide-react';
+import { Lock, AlertCircle, ArrowLeft } from 'lucide-react';
 import './Login.css'; // Reusing Login styles for consistency
+import './ChangePassword.css';
 
 const ChangePassword = () => {
     const [formData, setFormData] = useState({
@@ -66,10 +67,14 @@ const ChangePassword = () => {
     };
 
     return (
-        <div className="login-container">
+        <div className="change-password-container">
             <div className="login-background"></div>
 
             <div className="login-card fade-in">
+                <button className="back-to-landing-btn" onClick={() => navigate('/dashboard')}>
+                    <ArrowLeft size={18} />
+                    <span>Back</span>
+                </button>
                 <div className="login-header">
                     <div className="logo-container">
                         <Lock size={40} className="logo-icon" />

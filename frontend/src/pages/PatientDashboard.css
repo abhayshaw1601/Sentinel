@@ -2,6 +2,8 @@
     min-height: 100vh;
     background-color: var(--bg-primary);
     padding: var(--spacing-4);
+    padding-top: 80px;
+    /* Account for fixed navbar (64px) + spacing */
     transition: background-color 0.3s ease;
 }
 

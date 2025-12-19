@@ -1,6 +1,8 @@
 .patient-detail {
     min-height: 100vh;
     padding: var(--spacing-4);
+    padding-top: 80px;
+    /* Account for fixed navbar (64px) + spacing */
     background: var(--bg-primary);
     margin-right: 0;
     transition: margin-right var(--transition-slow);
@@ -138,6 +140,7 @@
         gap: var(--spacing-md);
     }
 }
+
 /* Header Badges and Discharge Button */
 .header-badges {
     display: flex;
@@ -184,13 +187,13 @@
         align-items: flex-start;
         width: 100%;
     }
-    
+
     .discharge-btn {
         width: 100%;
         justify-content: center;
         margin-top: var(--spacing-sm);
     }
-    
+
     .patient-header-info {
         flex-direction: column;
         gap: var(--spacing-md);

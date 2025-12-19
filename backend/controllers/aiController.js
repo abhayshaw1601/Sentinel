@@ -72,9 +72,11 @@ export const generateInsights = async (req, res) => {
         });
     } catch (error) {
         console.error('AI Insights Error:', error.message);
-        res.status(500).json({
+        const status = error.response?.status || 500;
+        const message = error.response?.data?.detail || error.response?.data?.message || error.message;
+        res.status(status).json({
             success: false,
-            message: error.response?.data?.message || error.message
+            message: message
         });
     }
 };
@@ -141,9 +143,11 @@ export const chatWithAI = async (req, res) => {
         });
     } catch (error) {
         console.error('AI Chat Error:', error.message);
-        res.status(500).json({
+        const status = error.response?.status || 500;
+        const message = error.response?.data?.detail || error.response?.data?.message || error.message;
+        res.status(status).json({
             success: false,
-            message: error.response?.data?.message || error.message
+            message: message
         });
     }
 };

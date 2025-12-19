@@ -47,6 +47,7 @@ export const authAPI = {
     getMyStaff: () => api.get('/auth/my-staff'),
     getCurrentUser: () => api.get('/auth/me'),
     updatePassword: (data) => api.put('/auth/updatepassword', data),
+    updateProfile: (data) => api.put('/auth/updateprofile', data),
     updateStaffShift: (id, data) => api.put(`/auth/staff/${id}/shift`, data),
     deleteStaff: (id) => api.delete(`/auth/staff/${id}`)
 };
