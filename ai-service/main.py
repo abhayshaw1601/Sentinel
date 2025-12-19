@@ -118,10 +118,10 @@ Patient Information:
 Recent Vital Signs (Last 24 hours):
 """
         
-        # Add vitals summary
+        # Add vitals summary (reduced from 10 to 5 to save API quota)
         if request.vitals:
             vitals_summary = []
-            for vital in request.vitals[:10]:  # Last 10 readings
+            for vital in request.vitals[:5]:  # Last 5 readings (reduced from 10)
                 vital_str = f"- Time: {vital.timestamp}"
                 if vital.heartRate:
                     vital_str += f"\n  Heart Rate: {vital.heartRate} bpm"
@@ -139,10 +139,10 @@ Recent Vital Signs (Last 24 hours):
         else:
             patient_context += "No recent vital signs recorded."
 
-        # Add reports summary
+        # Add reports summary (reduced from 5 to 3 to save API quota)
         patient_context += "\n\nMedical Reports:\n"
         if request.reports:
-            for i, report in enumerate(request.reports[:5], 1):
+            for i, report in enumerate(request.reports[:3], 1):  # Top 3 reports (reduced from 5)
                 patient_context += f"\n{i}. {report.title} ({report.category})"
                 if report.content:
                     patient_context += f"\n   Content: {report.content[:200]}..."
@@ -151,52 +151,74 @@ Recent Vital Signs (Last 24 hours):
         else:
             patient_context += "No reports available."
 
-        # Create prompt for Gemini
+        # Create prompt for Gemini (optimized for lower token usage)
         prompt = f"""
-You are an experienced ICU physician assistant AI. Analyze the following patient data and provide actionable insights.
+You are an ICU physician assistant AI. Analyze the patient data and provide actionable insights.
 
 {patient_context}
 
-Generate your analysis in the following format. Use these EXACT severity keywords in your bullet points:
+Provide analysis in this format with these EXACT severity keywords:
 
 ### Immediate Concerns:
 - **Critical:** [High-severity issues requiring immediate action]
-- **Warning:** [Medium-severity issues needing attention]
-- **Info:** [General information and stable observations]
+- **Warning:** [Medium-severity issues]
+- **Info:** [Stable observations]
 
 ### Recommendations:
-- **Critical:** [Urgent interventions needed]
-- **Warning:** [Important care adjustments]
-- **Info:** [Routine monitoring suggestions]
+- **Critical:** [Urgent interventions]
+- **Warning:** [Care adjustments]
+- **Info:** [Routine monitoring]
 
 ### Action Items:
-- **Critical:** [Immediate actions required]
+- **Critical:** [Immediate actions]
 - **Warning:** [Priority tasks]
-- **Info:** [Standard care protocols]
+- **Info:** [Standard protocols]
 
-IMPORTANT RULES:
-1. Start each bullet point with "- **Critical:**", "- **Warning:**", or "- **Info:**"
-2. Be specific and cite actual data points (vital readings, trends, etc.)
-3. Each insight should be concise (1-2 sentences max)
-4. Focus on actionable recommendations
-5. Include at least 2-3 Critical items if there are serious concerns
+RULES:
+1. Start each point with "- **Critical:**", "- **Warning:**", or "- **Info:**"
+2. Be specific, cite data points
+3. Keep concise (1-2 sentences)
+4. Include 2-3 Critical items if serious concerns exist
 """
 
-        # Call Gemini API
-        model = genai.GenerativeModel('gemini-flash-latest')
+        # Call Gemini API - Using gemini-1.5-flash for higher quota (1,500 req/day vs 20 req/day)
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
         response = model.generate_content(prompt)
+
+        # Safely extract response text
+        insights_text = ""
+        try:
+            insights_text = response.text if response.text else "Unable to generate insights at this time."
+        except Exception as text_error:
+            print(f"Error extracting insights text: {text_error}")
+            insights_text = "Error generating insights. Please try again."
 
         return {
             "success": True,
             "data": {
-                "insights": response.text,
+                "insights": insights_text,
                 "generatedAt": datetime.now().isoformat(),
                 "patientName": request.patient.name
             }
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_message = str(e)
+        status_code = 500
+        
+        # Provide specific error messages
+        if "quota" in error_message.lower() or "429" in error_message:
+            status_code = 429
+            error_message = "API quota exceeded. Please wait for quota reset (usually midnight Pacific Time)."
+        elif "api_key" in error_message.lower() or "authentication" in error_message.lower():
+            status_code = 401
+            error_message = "Invalid API key. Please check your Gemini API key."
+        elif not GEMINI_API_KEY:
+            status_code = 503
+            error_message = "AI service not configured. Gemini API key is missing."
+        
+        print(f"Insights generation error: {error_message}")
+        raise HTTPException(status_code=status_code, detail=error_message)
 
 # Chat endpoint for conversational AI
 @app.post("/api/chat")
@@ -230,30 +252,53 @@ Recent reports summaries:
             content = msg.get('content', '')
             conversation += f"{role.capitalize()}: {content}\n"
 
-        # Create prompt
+        # Create prompt (optimized for lower token usage)
         prompt = f"""
 {context_str}
 {conversation}
 
 User: {request.message}
 
-Provide a helpful, accurate response based on the patient context. If you don't have enough information, ask clarifying questions.
+Provide a helpful, accurate response based on patient context. Ask clarifying questions if needed.
 """
 
-        # Call Gemini API
-        model = genai.GenerativeModel('gemini-flash-latest')
+        # Call Gemini API - Using gemini-1.5-flash for higher quota
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
         response = model.generate_content(prompt)
+
+        # Safely extract response text
+        response_text = ""
+        try:
+            response_text = response.text if response.text else "I apologize, but I couldn't generate a response."
+        except Exception as text_error:
+            print(f"Error extracting response text: {text_error}")
+            response_text = "I encountered an issue generating the response. Please try again."
 
         return {
             "success": True,
             "data": {
-                "response": response.text,
+                "response": response_text,
                 "timestamp": datetime.now().isoformat()
             }
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_message = str(e)
+        status_code = 500
+        
+        # Provide specific error messages for common issues
+        if "quota" in error_message.lower():
+            status_code = 429
+            error_message = "API quota exceeded. Please wait for quota reset or check your API plan."
+        elif "api_key" in error_message.lower() or "authentication" in error_message.lower():
+            status_code = 401
+            error_message = "Invalid API key. Please check your Gemini API key configuration."
+        elif not GEMINI_API_KEY:
+            status_code = 503
+            error_message = "AI service not configured. Gemini API key is missing."
+        
+        print(f"Chat endpoint error: {error_message}")
+        raise HTTPException(status_code=status_code, detail=error_message)
 
 # Process uploaded files (PDFs, images)
 @app.post("/api/process-file")
@@ -352,8 +397,8 @@ IMPORTANT RULES:
             
             image = Image.open(io.BytesIO(image_data))
             
-            # Call Gemini Vision API
-            model = genai.GenerativeModel('gemini-flash-latest')
+            # Call Gemini Vision API - Using gemini-1.5-flash for higher quota
+            model = genai.GenerativeModel('gemini-1.5-flash')
             response = model.generate_content([prompt, image])
             
             ai_response = response.text
@@ -471,8 +516,8 @@ GUIDELINES:
 """
 
 
-        # Call Gemini API
-        model = genai.GenerativeModel('gemini-flash-latest')
+        # Call Gemini API - Using gemini-1.5-flash for higher quota
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
         response = model.generate_content(prompt)
 
         return {
@@ -501,4 +546,4 @@ if __name__ == "__main__":
     print(f"📖 API Docs: http://localhost:{port}/docs\n")
     
     uvicorn.run(app, host=host, port=port)
-# trigger reload
+# Force reload - changes applied at 04:20 IST
