@@ -385,7 +385,9 @@ IMPORTANT RULES:
                     current_section = 'medications'
                 elif 'SEVERITY:' in line.upper():
                     severity_match = line.split(':', 1)[1].strip() if ':' in line else "Medium"
-                    severity = severity_match.split()[0] if severity_match else "Medium"
+                    raw_severity = severity_match.split()[0].replace('*', '').strip() if severity_match else "Medium"
+                    # Visualize/Normalize first letter just in case
+                    severity = raw_severity.capitalize() if raw_severity else "Medium"
                     current_section = None
                 elif current_section == 'diagnosis' and line:
                     diagnosis += " " + line
