@@ -1,0 +1,708 @@
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(to right, #031A6B, #005B96, #00A1E4, #89DCF0, #D9F5FC);
+    /* 5-Color Palette Gradient */
+}
+
+.login-background {
+    display: none;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.85);
+    /* Lighter Glass for contrast */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius-lg);
+    padding: 3.5rem 3rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    position: relative;
+    z-index: 10;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.logo-icon {
+    color: #000046;
+    /* Matching Dark Blue */
+}
+
+.login-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #000046;
+    /* Darker Shade for Headings */
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.login-form {
+    margin-top: 1.5rem;
+}
+
+/* Unified Input Styles - STRICT WHITE */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    /* Darker gray for better visibility */
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3af;
+    /* Slightly lighter gray base */
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 20;
+}
+
+.login-card .input-wrapper input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 4.5rem !important;
+    /* Force high padding to clear icon */
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #1f2937;
+    background-color: #ffffff !important;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.input-wrapper input:focus~.input-icon,
+.input-wrapper:focus-within .input-icon {
+    color: var(--color-primary);
+}
+
+.input-wrapper input::placeholder {
+    color: #9ca3af;
+    /* Darker placeholder for better readability */
+}
+
+/* Role Toggle - Segmented Control Style */
+.role-toggle {
+    display: flex;
+    background: rgba(0, 0, 0, 0.05);
+    /* Subtle dark container for contrast on glass */
+    padding: 0.35rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.role-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    /* Darker gray for visibility */
+    background: transparent;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-btn:hover {
+    color: var(--text-primary);
+}
+
+.role-btn.active {
+    background: #ffffff;
+    color: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Staff Role Sub-selector - Segmented Control match */
+.staff-role-selector {
+    display: flex;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.25rem;
+    border-radius: var(--border-radius);
+    gap: 0;
+    /* Remove gap for strict segmented feel */
+    margin-bottom: 1.5rem;
+}
+
+.staff-role-selector button {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    /* Removed border */
+    background: transparent;
+    color: #374151;
+    /* Darker gray for visibility */
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.staff-role-selector button.active-subrole {
+    background: #ffffff;
+    color: var(--color-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+}
+
+/* Primary Button */
+.login-btn {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 1rem;
+}
+
+.login-btn:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.login-btn:disabled {
+    background-color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+/* Footer Links */
+.login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.login-footer p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.login-footer a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 0.25rem;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Alerts */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.alert-error {
+    background-color: hsl(0, 100%, 98%);
+    border: 1px solid hsl(0, 80%, 90%);
+    color: var(--color-danger);
+}
+
+/* OTP Instruction Text */
+.otp-instruction {
+    color: #374151;
+    /* Dark gray for better visibility */
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Quick Access Section - Professional Bottom Placement */
+.quick-access-container {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    position: relative;
+}
+
+.quick-access-divider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right,
+            transparent,
+            rgba(0, 0, 0, 0.1) 20%,
+            rgba(0, 0, 0, 0.1) 80%,
+            transparent);
+}
+
+.quick-access-label {
+    text-align: center;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+.quick-access-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.quick-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem;
+    border-radius: 12px;
+    border: 1.5px solid transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.quick-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quick-btn:hover::before {
+    opacity: 1;
+}
+
+.quick-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.quick-btn:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.quick-btn-icon {
+    font-size: 1.75rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s ease;
+}
+
+.quick-btn:hover .quick-btn-icon {
+    transform: scale(1.15);
+}
+
+.quick-btn-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Individual Button Colors */
+.quick-btn.admin {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.03));
+}
+
+.quick-btn.admin .quick-btn-text {
+    color: #2563eb;
+}
+
+.quick-btn.admin:hover {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
+    box-shadow:
+        0 8px 20px rgba(59, 130, 246, 0.25),
+        0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+.quick-btn.staff {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03));
+}
+
+.quick-btn.staff .quick-btn-text {
+    color: #059669;
+}
+
+.quick-btn.staff:hover {
+    border-color: #10b981;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08));
+    box-shadow:
+        0 8px 20px rgba(16, 185, 129, 0.25),
+        0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+.quick-btn.patient {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.03));
+}
+
+.quick-btn.patient .quick-btn-text {
+    color: #d97706;
+}
+
+.quick-btn.patient:hover {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08));
+    box-shadow:
+        0 8px 20px rgba(245, 158, 11, 0.25),
+        0 0 0 1px rgba(245, 158, 11, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .login-container {
+        padding: 1rem;
+        /* Gradient continues from main class */
+    }
+
+    .login-card {
+        padding: 2rem 1.5rem;
+        /* Enforce Glassy look on mobile */
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .quick-access-buttons {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .quick-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0.875rem 1rem;
+        gap: 0.75rem;
+    }
+
+    .quick-btn-icon {
+        font-size: 1.5rem;
+    }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/*                            DARK MODE OVERRIDES                             */
+/* -------------------------------------------------------------------------- */
+
+.dark-mode .login-container {
+    background: linear-gradient(to right, #020617, #0f172a, #1e3a8a, #172554, #0f172a);
+}
+
+.dark-mode .login-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .login-header h1 {
+    color: #f8fafc;
+    /* Slate-50 */
+}
+
+.dark-mode .logo-icon {
+    color: #38bdf8;
+    /* Light Blue for Dark Mode */
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.3));
+}
+
+.dark-mode .login-header p {
+    color: #94a3b8;
+    /* Slate-400 */
+}
+
+.dark-mode .form-group label {
+    color: #e2e8f0;
+    /* Slate-200 */
+}
+
+.dark-mode .login-card .input-wrapper input {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    padding-left: 4.5rem !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
+
+.dark-mode .input-wrapper input::placeholder {
+    color: #64748b;
+}
+
+.dark-mode .input-wrapper input:focus {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.dark-mode .input-wrapper .input-icon {
+    color: rgba(255, 255, 255, 0.7);
+    /* Much brighter icons in dark mode */
+}
+
+.dark-mode .input-wrapper input:focus~.input-icon,
+.dark-mode .input-wrapper:focus-within .input-icon {
+    color: #38bdf8;
+}
+
+/* Role Toggle Dark Mode */
+.dark-mode .role-toggle {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .role-btn {
+    color: #94a3b8;
+}
+
+.dark-mode .role-btn:hover {
+    color: #f1f5f9;
+}
+
+.dark-mode .role-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #38bdf8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Staff Role Selector Dark Mode */
+.dark-mode .staff-role-selector {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .staff-role-selector button {
+    color: #94a3b8;
+}
+
+.dark-mode .staff-role-selector button.active-subrole {
+    background: rgba(255, 255, 255, 0.1);
+    color: #38bdf8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .login-footer p {
+    color: #94a3b8;
+}
+
+.dark-mode .login-footer a {
+    color: #38bdf8;
+}
+
+.dark-mode .login-footer a:hover {
+    color: #7dd3fc;
+}
+
+.dark-mode .otp-instruction {
+    color: #e2e8f0;
+}
+
+/* Theme Toggle from Navbar (Glassy Version) */
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    /* Glassy Background */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover .theme-icon {
+    color: var(--color-primary);
+    /* Keep icon colored on hover for contrast */
+}
+
+.theme-icon {
+    color: var(--text-secondary);
+    transition: all var(--transition-base);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Dark Mode Specific Glass */
+.dark-mode .theme-toggle {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .theme-toggle:hover .theme-icon {
+    color: #38bdf8;
+    /* Light blue in dark mode */
+}
+
+/* Quick Access Dark Mode */
+.dark-mode .quick-access-divider {
+    background: linear-gradient(to right,
+            transparent,
+            rgba(255, 255, 255, 0.1) 20%,
+            rgba(255, 255, 255, 0.1) 80%,
+            transparent);
+}
+
+.dark-mode .quick-access-label {
+    color: #94a3b8;
+}
+
+.dark-mode .quick-btn {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dark-mode .quick-btn::before {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+}
+
+.dark-mode .quick-btn:hover {
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .quick-btn.admin {
+    border-color: rgba(96, 165, 250, 0.3);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.05));
+}
+
+.dark-mode .quick-btn.admin .quick-btn-text {
+    color: #60a5fa;
+}
+
+.dark-mode .quick-btn.admin:hover {
+    border-color: #60a5fa;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+    box-shadow:
+        0 8px 20px rgba(59, 130, 246, 0.3),
+        0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+.dark-mode .quick-btn.staff {
+    border-color: rgba(52, 211, 153, 0.3);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.05));
+}
+
+.dark-mode .quick-btn.staff .quick-btn-text {
+    color: #34d399;
+}
+
+.dark-mode .quick-btn.staff:hover {
+    border-color: #34d399;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+    box-shadow:
+        0 8px 20px rgba(16, 185, 129, 0.3),
+        0 0 0 1px rgba(52, 211, 153, 0.4);
+}
+
+.dark-mode .quick-btn.patient {
+    border-color: rgba(251, 191, 36, 0.3);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.05));
+}
+
+.dark-mode .quick-btn.patient .quick-btn-text {
+    color: #fbbf24;
+}
+
+.dark-mode .quick-btn.patient:hover {
+    border-color: #fbbf24;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+    box-shadow:
+        0 8px 20px rgba(245, 158, 11, 0.3),
+        0 0 0 1px rgba(251, 191, 36, 0.4);
+}

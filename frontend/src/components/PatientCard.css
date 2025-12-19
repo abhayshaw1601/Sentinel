@@ -1,0 +1,199 @@
+.patient-card {
+    position: relative;
+    z-index: 10;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    cursor: pointer !important;
+    transition: all var(--transition-base);
+    pointer-events: auto !important;
+    user-select: none;
+}
+
+.patient-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+.patient-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--bg-tertiary);
+}
+
+.patient-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.patient-id {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+
+.patient-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.detail-item svg {
+    color: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.detail-item .reason {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.patient-card-footer {
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--bg-tertiary);
+}
+
+.view-details-text {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+}
+
+.patient-card:hover .view-details-text {
+    transform: translateX(4px);
+    color: var(--color-primary-dark);
+}
+
+/* ===== CRITICAL RISK STYLES ===== */
+.patient-card.critical-risk {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    animation: criticalPulse 2s ease-in-out infinite;
+}
+
+.patient-card.critical-risk:hover {
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+    transform: translateY(-6px);
+}
+
+.patient-card.warning-risk {
+    border-color: var(--color-warning);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+}
+
+.patient-card.warning-risk:hover {
+    box-shadow: 0 8px 28px rgba(245, 158, 11, 0.35);
+    transform: translateY(-5px);
+}
+
+.header-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+}
+
+.critical-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.critical-indicator.critical {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid var(--color-danger);
+    animation: criticalBlink 1.5s ease-in-out infinite;
+}
+
+.critical-indicator.warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid var(--color-warning);
+}
+
+.critical-indicator.moderate {
+    background: var(--info-bg);
+    color: var(--info-text);
+    border: 1px solid var(--color-primary);
+}
+
+.critical-indicator.stable {
+    background: var(--color-secondary-light);
+    color: var(--color-secondary-dark);
+    border: 1px solid var(--color-secondary);
+}
+
+.indicator-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.indicator-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes criticalPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+    }
+}
+
+@keyframes criticalBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .header-badges {
+        align-items: flex-start;
+    }
+
+    .critical-indicator {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+
+    .indicator-text {
+        font-size: 0.65rem;
+    }
+}

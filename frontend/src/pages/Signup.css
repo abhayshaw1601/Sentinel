@@ -1,0 +1,312 @@
+.signup-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(to right, #031A6B, #005B96, #00A1E4, #89DCF0, #D9F5FC);
+    /* 5-Color Palette Gradient */
+}
+
+.signup-background {
+    display: none;
+}
+
+.signup-card {
+    background: rgba(255, 255, 255, 0.85);
+    /* Lighter Glass for contrast */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    position: relative;
+    z-index: 10;
+}
+
+.signup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
+.logo-icon {
+    color: #000046;
+    /* Matching Dark Blue */
+    filter: none;
+}
+
+.signup-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #000046;
+    /* Darker Shade for Headings */
+    margin: 0.5rem 0;
+    letter-spacing: -0.025em;
+}
+
+.signup-header p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    /* Handled by form-group margins */
+    margin-top: 1.5rem;
+}
+
+/* Unified Inputs (Copied from Login.css) */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1f2937;
+    /* Darker gray for better visibility */
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    /* Medium gray for icons */
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 20;
+}
+
+.signup-card .input-wrapper input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 4.5rem !important;
+    /* Force high padding to clear icon */
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #1f2937;
+    /* Darker text for better visibility */
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.input-wrapper input:focus+.input-icon {
+    color: var(--color-primary);
+}
+
+.signup-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.signup-footer a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.signup-footer a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+/* Alert styles */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.alert-error {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: var(--color-danger);
+}
+
+@media (max-width: 640px) {
+    .signup-container {
+        padding: 1rem;
+        /* Gradient continues from main class */
+    }
+
+    .signup-card {
+        padding: 2rem 1.5rem;
+        /* Enforce Glassy look on mobile */
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/*                            DARK MODE OVERRIDES                             */
+/* -------------------------------------------------------------------------- */
+
+.dark-mode .signup-container {
+    background: linear-gradient(to right, #020617, #0f172a, #1e3a8a, #172554, #0f172a);
+}
+
+.dark-mode .signup-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .signup-header h1 {
+    color: #f8fafc;
+    /* Slate-50 */
+}
+
+.dark-mode .logo-icon {
+    color: #38bdf8;
+    /* Light Blue for Dark Mode */
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.3));
+}
+
+.dark-mode .signup-header p {
+    color: #94a3b8;
+    /* Slate-400 */
+}
+
+.dark-mode .form-group label {
+    color: #e2e8f0;
+    /* Slate-200 */
+}
+
+.dark-mode .signup-card .input-wrapper input {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    padding-left: 4.5rem !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
+
+.dark-mode .input-wrapper input::placeholder {
+    color: #64748b;
+}
+
+.dark-mode .input-wrapper input:focus {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.dark-mode .input-wrapper .input-icon {
+    color: rgba(255, 255, 255, 0.7);
+    /* Brighter icons in dark mode */
+}
+
+.dark-mode .input-wrapper input:focus~.input-icon,
+.dark-mode .input-wrapper:focus-within .input-icon {
+    color: #38bdf8;
+}
+
+.dark-mode .signup-footer {
+    color: #94a3b8;
+}
+
+.dark-mode .signup-footer a {
+    color: #38bdf8;
+}
+
+.dark-mode .signup-footer a:hover {
+    color: #7dd3fc;
+}
+
+/* Theme Toggle from Navbar (Glassy Version) */
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    /* Glassy Background */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover .theme-icon {
+    color: var(--color-primary);
+    /* Keep icon colored on hover for contrast */
+}
+
+.theme-icon {
+    color: var(--text-secondary);
+    transition: all var(--transition-base);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Dark Mode Specific Glass */
+.dark-mode .theme-toggle {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .theme-toggle:hover .theme-icon {
+    color: #38bdf8;
+    /* Light blue in dark mode */
+}
