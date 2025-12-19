@@ -212,7 +212,7 @@ const MedicalChatbot = ({ patientId }) => {
                                 <h3>Medical Assistant</h3>
                                 <div className="status-indicator">
                                     <span className="status-dot"></span>
-                                    <span>Online • AI Powered</span>
+                                    <span>Online</span>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +229,6 @@ const MedicalChatbot = ({ patientId }) => {
                     {/* Predefined Prompts */}
                     {messages.length <= 1 && (
                         <div className="predefined-prompts">
-                            <p className="prompts-label">Quick questions:</p>
                             <div className="prompts-grid">
                                 {predefinedPrompts.map((prompt, idx) => (
                                     <button
@@ -242,7 +241,7 @@ const MedicalChatbot = ({ patientId }) => {
                                             await new Promise(resolve => setTimeout(resolve, 50));
                                             // Create a synthetic event
                                             const syntheticEvent = {
-                                                preventDefault: () => {},
+                                                preventDefault: () => { },
                                                 target: { value: prompt }
                                             };
                                             handleSendMessage(syntheticEvent);

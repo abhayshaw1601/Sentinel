@@ -763,6 +763,7 @@ const AIAssistant = ({ patientId, patient, onStateChange, onCriticalIndexChange,
                                     <MessageCircle size={36} />
                                     <p>Ask about {patient?.name}</p>
                                     <div className="quick-questions">
+                                        <p className="quick-questions-label">QUICK QUESTIONS:</p>
                                         <button onClick={() => setChatInput('What are the main concerns?')}>
                                             Main concerns?
                                         </button>
