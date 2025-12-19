@@ -166,3 +166,34 @@ export const dischargePatient = async (req, res) => {
         });
     }
 };
+
+// @desc    Readmit patient (undo discharge)
+// @route   PUT /api/patients/:id/readmit
+// @access  Private
+export const readmitPatient = async (req, res) => {
+    try {
+        const patient = await Patient.findById(req.params.id);
+
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                message: 'Patient not found'
+            });
+        }
+
+        patient.status = 'admitted';
+        patient.dischargeDate = undefined;
+        await patient.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Patient readmitted successfully',
+            data: patient
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

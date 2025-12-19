@@ -5,7 +5,8 @@ import {
     createPatient,
     updatePatient,
     deletePatient,
-    dischargePatient
+    dischargePatient,
+    readmitPatient
 } from '../controllers/patientController.js';
 import { protect, authorize } from '../middleware/auth.js';
 
@@ -21,5 +22,6 @@ router.route('/:id')
     .delete(protect, authorize('admin'), deletePatient);
 
 router.put('/:id/discharge', protect, dischargePatient);
+router.put('/:id/readmit', protect, readmitPatient);
 
 export default router;

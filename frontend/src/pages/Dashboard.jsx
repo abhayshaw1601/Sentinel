@@ -15,7 +15,8 @@ import {
     Eye,
     Mail,
     Phone,
-    LogOut
+    LogOut,
+    RotateCcw
 } from 'lucide-react';
 import logo from '../assets/logo.png';
 import AddPatientModal from '../components/AddPatientModal';
@@ -87,6 +88,17 @@ const Dashboard = () => {
         } catch (error) {
             console.error('Discharge failed:', error);
             alert('Failed to discharge patient');
+        }
+    };
+
+    const handleReadmitPatient = async (id) => {
+        if (!window.confirm('Are you sure you want to readmit this patient?')) return;
+        try {
+            await patientAPI.readmit(id);
+            fetchData(); // Refresh lists
+        } catch (error) {
+            console.error('Readmit failed:', error);
+            alert('Failed to readmit patient');
         }
     };
 
@@ -353,13 +365,22 @@ const Dashboard = () => {
                                                             <LogOut size={14} />
                                                         </button>
                                                     ) : (
-                                                        <button
-                                                            className="icon-btn-sm danger"
-                                                            onClick={() => handleDeletePatient(patient._id)}
-                                                            title="Delete Record"
-                                                        >
-                                                            <Trash2 size={14} />
-                                                        </button>
+                                                        <>
+                                                            <button
+                                                                className="icon-btn-sm warning"
+                                                                onClick={() => handleReadmitPatient(patient._id)}
+                                                                title="Readmit Patient"
+                                                            >
+                                                                <RotateCcw size={14} />
+                                                            </button>
+                                                            <button
+                                                                className="icon-btn-sm danger"
+                                                                onClick={() => handleDeletePatient(patient._id)}
+                                                                title="Delete Record"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </>
                                                     )}
                                                 </div>
                                             </td>
