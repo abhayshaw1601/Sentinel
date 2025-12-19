@@ -71,18 +71,12 @@ const StaffDetailModal = ({ staff, onClose }) => {
                         <div className="detail-grid">
                             <div className="detail-item">
                                 {staff.isLoggedIn ? (
-                                    <div className="detail-icon success" style={{
-                                        width: '18px',
-                                        height: '18px',
-                                        borderRadius: '50%',
+                                    <div className="detail-icon status-indicator success" style={{
                                         background: '#10b981',
                                         boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.2)'
                                     }} />
                                 ) : (
-                                    <div className="detail-icon" style={{
-                                        width: '18px',
-                                        height: '18px',
-                                        borderRadius: '50%',
+                                    <div className="detail-icon status-indicator" style={{
                                         background: '#9ca3af'
                                     }} />
                                 )}

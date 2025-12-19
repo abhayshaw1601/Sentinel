@@ -94,6 +94,69 @@
     border-top: 1px solid var(--border-color);
 }
 
+/* Input Wrapper Styles for Modals */
+.modal-form .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.modal-form .input-wrapper .input-icon {
+    position: absolute;
+    left: var(--spacing-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    pointer-events: none;
+    transition: all var(--transition-fast);
+    z-index: 2;
+    width: 20px;
+    height: 20px;
+}
+
+.modal-form .input-wrapper input {
+    width: 100%;
+    padding: var(--spacing-4) var(--spacing-4) var(--spacing-4) 3rem;
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+    font-weight: var(--font-weight-normal);
+}
+
+.modal-form .input-wrapper input:hover {
+    border-color: var(--border-color-strong);
+}
+
+.modal-form .input-wrapper input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-lightest);
+    background-color: var(--bg-card);
+}
+
+.modal-form .input-wrapper input:focus ~ .input-icon,
+.modal-form .input-wrapper:focus-within .input-icon {
+    color: var(--color-primary);
+}
+
+.modal-form .input-wrapper input::placeholder {
+    color: var(--text-tertiary);
+    font-weight: var(--font-weight-normal);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--border-color);
+}
+
 @media (max-width: 768px) {
     .modal-content {
         padding: var(--spacing-lg);

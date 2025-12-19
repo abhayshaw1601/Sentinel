@@ -77,14 +77,17 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
+        // Clear local state immediately for instant UI update
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        
+        // Make API call in background (non-blocking)
         try {
             await authAPI.logout();
         } catch (error) {
-            console.error('Logout failed:', error);
-        } finally {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            setUser(null);
+            // Silently fail - user is already logged out locally
+            console.error('Logout API call failed:', error);
         }
     };
 

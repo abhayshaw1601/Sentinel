@@ -11,9 +11,10 @@ const Navbar = () => {
     const { isDarkMode, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
+    const handleLogout = async () => {
+        // Clear state immediately and navigate for instant feedback
+        await logout();
+        navigate('/login', { replace: true });
     };
 
     return (

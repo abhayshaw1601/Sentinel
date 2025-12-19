@@ -7,6 +7,31 @@
     font-family: 'Inter', sans-serif;
 }
 
+/* Active Shift Banner - Aligned with dashboard sections */
+.active-shift-banner {
+    margin: 0 0 var(--spacing-6) 0;
+    padding: var(--spacing-4) var(--spacing-8);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    border-radius: var(--border-radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    box-shadow: var(--shadow-md);
+}
+
+.active-shift-banner h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.active-shift-banner p {
+    margin: var(--spacing-1) 0 0 0;
+    opacity: 0.9;
+    font-size: var(--font-size-sm);
+}
+
 /* Metrics Cards */
 .metrics-cards-grid {
     display: grid;

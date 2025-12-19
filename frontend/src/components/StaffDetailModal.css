@@ -126,6 +126,7 @@
     border-radius: 12px;
 }
 
+
 .detail-icon {
     color: var(--color-primary);
     flex-shrink: 0;
@@ -138,6 +139,23 @@
 
 .detail-icon.danger {
     color: var(--color-danger);
+}
+
+/* Status indicator circle - ensure it stays circular */
+.status-indicator {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    flex-basis: 18px !important;
+    display: block !important;
+    align-self: flex-start;
+    margin-top: 0.25rem;
 }
 
 .detail-item>div {

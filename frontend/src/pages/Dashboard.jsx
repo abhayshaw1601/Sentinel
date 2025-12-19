@@ -170,21 +170,11 @@ const Dashboard = () => {
 
             {/* ACTIVE SHIFT DISPLAY FOR STAFF */}
             {user?.role === 'staff' && user.activeSchedule && user.activeSchedule.shiftName && (
-                <div className="active-shift-banner fade-in" style={{
-                    margin: '0 2rem 1rem 2rem',
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                    color: 'white',
-                    padding: '1rem',
-                    borderRadius: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}>
+                <div className="active-shift-banner fade-in">
                     <Clock size={24} />
                     <div>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Active Shift: {user.activeSchedule.shiftName}</h3>
-                        <p style={{ margin: 0, opacity: 0.9 }}>
+                        <h3>Active Shift: {user.activeSchedule.shiftName}</h3>
+                        <p>
                             {new Date(user.activeSchedule.startTime).toLocaleString()} - {new Date(user.activeSchedule.endTime).toLocaleString()}
                         </p>
                     </div>

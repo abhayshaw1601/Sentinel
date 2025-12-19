@@ -5,12 +5,14 @@ import {
     User, Heart
 } from 'lucide-react';
 import { patientAPI, vitalsAPI } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import './PatientDashboard.css';
 import ReportsSection from '../components/ReportsSection';
 import MedicalChatbot from '../components/MedicalChatbot';
 
 const PatientDashboard = () => {
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [patient, setPatient] = useState(null);
     const [vitals, setVitals] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,10 +55,9 @@ const PatientDashboard = () => {
         fetchPatientData();
     }, [navigate]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login', { replace: true });
     };
 
     if (loading) return <div className="loading-spinner">Loading your portal...</div>;
