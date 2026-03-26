@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
 
 const CriticalIndexContext = createContext();
 
@@ -55,7 +56,7 @@ export const CriticalIndexProvider = ({ children }) => {
 
     const getAllCriticalPatients = () => {
         return Object.entries(criticalIndexes)
-            .filter(([_, data]) => data.level === 'critical' || data.level === 'warning')
+            .filter(([, data]) => data.level === 'critical' || data.level === 'warning')
             .map(([patientId, data]) => ({ patientId, ...data }));
     };
 

@@ -11,7 +11,11 @@ import PatientDetail from './pages/PatientDetail';
 import PatientDashboard from './pages/PatientDashboard';
 import ChangePassword from './pages/ChangePassword';
 import AIDemo from './pages/AIDemo';
-import Navbar from './components/Navbar';
+import Patients from './pages/Patients';
+import Staff from './pages/Staff';
+import Reports from './pages/Reports';
+import Settings from './pages/Settings';
+import AppShell from './components/AppShell';
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 
@@ -35,12 +39,11 @@ const PrivateRoute = ({ children }) => {
 };
 
 const AppContent = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Router>
       <ErrorBoundary>
-        {isAuthenticated && <Navbar />}
         <Routes>
           <Route 
             path="/" 
@@ -50,44 +53,31 @@ const AppContent = () => {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/patient-dashboard" element={<PatientDashboard />} />
+
           <Route
-            path="/dashboard"
             element={
               <PrivateRoute>
+                <AppShell />
+              </PrivateRoute>
+            }
+          >
+            <Route
+              path="/dashboard"
+              element={
                 <ErrorBoundary>
                   <Dashboard />
                 </ErrorBoundary>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/patient-dashboard"
-            element={<PatientDashboard />}
-          />
-          <Route
-            path="/patient/:id"
-            element={
-              <PrivateRoute>
-                <PatientDetail />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/change-password"
-            element={
-              <PrivateRoute>
-                <ChangePassword />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/ai-demo"
-            element={
-              <PrivateRoute>
-                <AIDemo />
-              </PrivateRoute>
-            }
-          />
+              }
+            />
+            <Route path="/patient/:id" element={<PatientDetail />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/ai-demo" element={<AIDemo />} />
+            <Route path="/patients" element={<Patients />} />
+            <Route path="/staff" element={<Staff />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
         </Routes>
       </ErrorBoundary>
     </Router>

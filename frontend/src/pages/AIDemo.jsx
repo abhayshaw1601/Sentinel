@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Brain, Users, Loader } from 'lucide-react';
 import AIAssistant from '../components/AIAssistant';
-import { useTheme } from '../context/ThemeContext';
 import { useCriticalIndex } from '../context/CriticalIndexContext';
 import { patientAPI } from '../utils/api';
 import './AIDemo.css';

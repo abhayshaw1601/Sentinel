@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Mail, Save, Briefcase, Clock, Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { authAPI } from '../utils/api';
 import './UserProfileModal.css';
 
 const UserProfileModal = ({ isOpen, onClose }) => {
-    const { user, updateUser } = useAuth();
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -13,10 +12,10 @@ const UserProfileModal = ({ isOpen, onClose }) => {
         designation: '',
         role: ''
     });
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (user && isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFormData({
                 name: user.name || '',
                 email: user.email || '',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { patientAPI } from '../utils/api';
-import { ArrowLeft, Activity, FileText, UserCheck } from 'lucide-react';
+import { ArrowRightLeft, LogOut, FileText, Activity, Pill, ClipboardList } from 'lucide-react';
 import VitalsMonitor from '../components/VitalsMonitor';
 import ReportsSection from '../components/ReportsSection';
 import AIAssistant from '../components/AIAssistant';
@@ -13,13 +13,10 @@ const PatientDetail = () => {
     const [patient, setPatient] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('vitals');
-    const [sidebarOpen, setSidebarOpen] = useState(true); // Track sidebar state
-    const [discharging, setDischarging] = useState(false); // Track discharge process
-    // const { updateCriticalIndex } = useCriticalIndex(); // Temporarily disabled
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [discharging, setDischarging] = useState(false);
 
-    useEffect(() => {
-        fetchPatient();
-    }, [id]);
+    useEffect(() => { fetchPatient(); }, [id]);
 
     const fetchPatient = async () => {
         try {
@@ -33,28 +30,13 @@ const PatientDetail = () => {
     };
 
     const handleDischarge = async () => {
-        if (!window.confirm(`Are you sure you want to discharge ${patient.name}?`)) {
-            return;
-        }
-
+        if (!window.confirm(`Are you sure you want to discharge ${patient.name}?`)) return;
         setDischarging(true);
         try {
-            await patientAPI.update(id, {
-                status: 'discharged',
-                dischargeDate: new Date().toISOString()
-            });
-
-            // Refresh patient data
+            await patientAPI.update(id, { status: 'discharged', dischargeDate: new Date().toISOString() });
             await fetchPatient();
-
-            // Show success message
             alert(`${patient.name} has been successfully discharged.`);
-
-            // Navigate back to dashboard after a short delay
-            setTimeout(() => {
-                navigate('/dashboard');
-            }, 1500);
-
+            setTimeout(() => navigate('/dashboard'), 1500);
         } catch (error) {
             console.error('Error discharging patient:', error);
             alert('Failed to discharge patient. Please try again.');
@@ -63,94 +45,89 @@ const PatientDetail = () => {
         }
     };
 
-    if (loading) {
-        return <div className="loading-container">Loading patient data...</div>;
-    }
+    if (loading) return <div className="pd-loading">Loading patient data…</div>;
+    if (!patient) return <div className="pd-loading">Patient not found</div>;
 
-    if (!patient) {
-        return <div className="error-container">Patient not found</div>;
-    }
+    const admissionDate = patient.admissionDate
+        ? new Date(patient.admissionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : '—';
+
+    const tabs = [
+        { key: 'vitals',      label: 'Vitals Monitor',       icon: Activity },
+        { key: 'reports',     label: 'Reports & Documents',  icon: FileText },
+        { key: 'treatment',   label: 'Treatment Plan',       icon: ClipboardList },
+        { key: 'medications', label: 'Medications',          icon: Pill },
+    ];
 
     return (
-        <div className={`patient-detail fade-in ${sidebarOpen ? 'sidebar-open' : ''}`}>
-            <div className="patient-detail-header">
-                <button className="back-btn" onClick={() => navigate('/dashboard')}>
-                    <ArrowLeft size={20} />
-                    Back to Dashboard
-                </button>
-
-                <div className="patient-header-info">
-                    <div>            <h1>{patient.name}</h1>
-                        <p className="patient-meta">
-                            {patient.patientId} • {patient.age} years • {patient.gender}
-                        </p>
+        <div className={`pd-root fade-in ${sidebarOpen ? 'pd-sidebar-open' : ''}`}>
+            {/* ── Header ── */}
+            <div className="pd-header">
+                <div className="pd-header-left">
+                    <div className="pd-avatar">
+                        {patient.name?.charAt(0)?.toUpperCase()}
                     </div>
-                    <div className="header-badges">
-                        <span className={`badge ${patient.status === 'admitted' ? 'badge-success' : 'badge-info'}`}>
-                            {patient.status}
-                        </span>
-                        {patient.status === 'admitted' && (
-                            <button
-                                className="discharge-btn"
-                                onClick={handleDischarge}
-                                disabled={discharging}
-                            >
-                                <UserCheck size={18} />
-                                {discharging ? 'Discharging...' : 'Discharge Patient'}
-                            </button>
-                        )}
+                    <div className="pd-info">
+                        <div className="pd-name-row">
+                            <h1 className="pd-name">{patient.name}</h1>
+                            {patient.roomNumber && (
+                                <span className="pd-room-badge">
+                                    ROOM {patient.roomNumber}{patient.bedNumber ? `-${patient.bedNumber}` : ''}
+                                </span>
+                            )}
+                        </div>
+                        <div className="pd-meta-row">
+                            <span className="pd-meta-item">
+                                <span className="pd-meta-dot" /> ID: #{patient.patientId}
+                            </span>
+                            <span className="pd-meta-item">🗓 {patient.age} Years, {patient.gender}</span>
+                            <span className="pd-meta-item">📋 Admitted: {admissionDate}</span>
+                        </div>
                     </div>
                 </div>
-
-                <div className="patient-quick-info">
-                    <div className="info-card">
-                        <strong>Room/Bed:</strong>
-                        <span>{patient.roomNumber}/{patient.bedNumber}</span>
-                    </div>
-                    <div className="info-card">
-                        <strong>Doctor:</strong>
-                        <span>{patient.assignedDoctor}</span>
-                    </div>
-                    <div className="info-card">
-                        <strong>Admission:</strong>
-                        <span>{new Date(patient.admissionDate).toLocaleDateString()}</span>
-                    </div>
+                <div className="pd-header-actions">
+                    <button className="pd-btn-transfer">
+                        <ArrowRightLeft size={15} />
+                        Transfer Patient
+                    </button>
+                    {patient.status === 'admitted' && (
+                        <button className="pd-btn-discharge" onClick={handleDischarge} disabled={discharging}>
+                            <LogOut size={15} />
+                            {discharging ? 'Discharging…' : 'Discharge Patient'}
+                        </button>
+                    )}
                 </div>
             </div>
 
-            <div className="patient-detail-tabs">
-                <button
-                    className={`tab-btn ${activeTab === 'reports' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('reports')}
-                >
-                    <FileText size={18} />
-                    Reports & Documents
-                </button>
-                <button
-                    className={`tab-btn ${activeTab === 'vitals' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('vitals')}
-                >
-                    <Activity size={18} />
-                    Vitals Monitor
-                </button>
+            {/* ── Tabs ── */}
+            <div className="pd-tabs">
+                {tabs.map(({ key, label, icon: Icon }) => (
+                    <button
+                        key={key}
+                        className={`pd-tab ${activeTab === key ? 'active' : ''}`}
+                        onClick={() => setActiveTab(key)}
+                    >
+                        <Icon size={15} />
+                        {label}
+                    </button>
+                ))}
             </div>
 
-            <div className="patient-detail-content">
-                {activeTab === 'reports' && <ReportsSection patientId={id} />}
-                {activeTab === 'vitals' && <VitalsMonitor patientId={id} />}
+            {/* ── Content ── */}
+            <div className="pd-content">
+                {activeTab === 'vitals'    && <VitalsMonitor patientId={id} />}
+                {activeTab === 'reports'   && <ReportsSection patientId={id} />}
+                {(activeTab === 'treatment' || activeTab === 'medications') && (
+                    <div className="pd-placeholder">
+                        <ClipboardList size={40} className="pd-placeholder-icon" />
+                        <p>This section is coming soon.</p>
+                    </div>
+                )}
             </div>
 
-            {/* AI Assistant - Always present, minimizable */}
-            <AIAssistant
-                patientId={id}
-                patient={patient}
-                onStateChange={setSidebarOpen}
-                mode="sidebar"
-            />
+            <AIAssistant patientId={id} patient={patient} onStateChange={setSidebarOpen} mode="sidebar" />
         </div>
     );
 };
 
 export default PatientDetail;
-
-

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../utils/api';
-import { useAuth } from '../context/AuthContext';
 import { Lock, AlertCircle, ArrowLeft } from 'lucide-react';
 import './Login.css'; // Reusing Login styles for consistency
 import './ChangePassword.css';
@@ -17,7 +16,7 @@ const ChangePassword = () => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const { logout } = useAuth(); // Option to logout if needed, but we probably want to stay logged in
+    // const { logout } = useAuth(); // Option to logout if needed, but we probably want to stay logged in
 
     const handleChange = (e) => {
         setFormData({

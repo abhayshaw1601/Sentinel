@@ -271,9 +271,9 @@ const MedicalChatbot = ({ patientId }) => {
                                         {msg.role === 'bot' ? (
                                             <ReactMarkdown
                                                 components={{
-                                                    h3: ({ node, ...props }) => <h4 style={{ margin: '0.5rem 0', color: '#2563eb', fontSize: '1rem' }} {...props} />,
-                                                    ul: ({ node, ...props }) => <ul style={{ paddingLeft: '1.2rem', margin: '0.5rem 0' }} {...props} />,
-                                                    li: ({ node, ...props }) => <li style={{ marginBottom: '0.25rem' }} {...props} />
+                                                    h3: ({ ...props }) => <h4 style={{ margin: '0.5rem 0', color: '#2563eb', fontSize: '1rem' }} {...props} />,
+                                                    ul: ({ ...props }) => <ul style={{ paddingLeft: '1.2rem', margin: '0.5rem 0' }} {...props} />,
+                                                    li: ({ ...props }) => <li style={{ marginBottom: '0.25rem' }} {...props} />
                                                 }}
                                             >
                                                 {msg.content}

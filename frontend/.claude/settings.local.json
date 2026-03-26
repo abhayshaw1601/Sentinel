@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/Users/jaisw/Desktop/Sentinel/frontend/src/pages/Dashboard.css\":*)",
+      "Bash(\"C:/Users/jaisw/Desktop/Sentinel/frontend/src/pages/Landing.css\":*)",
+      "Bash(node -e \"const l = require\\(''./node_modules/lucide-react''\\); console.log\\(''Sun'' in l, ''Moon'' in l\\)\")",
+      "Bash(npm run:*)",
+      "Bash(\"C:/Users/jaisw/Desktop/Sentinel/frontend/src/pages/Login.css\":*)"
+    ]
+  }
+}

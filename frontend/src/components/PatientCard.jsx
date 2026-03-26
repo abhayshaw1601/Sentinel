@@ -45,7 +45,7 @@ const PatientCard = ({ patient, onDelete }) => {
     try {
         riskLevel = getPatientRiskLevel(patient._id);
         criticalData = getCriticalIndex(patient._id);
-    } catch (error) {
+    } catch {
         // Silently handle errors
     }
 

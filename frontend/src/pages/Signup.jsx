@@ -3,7 +3,7 @@ import { authAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext'; // To access verifyToken/login if needed
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { UserPlus, User, Mail, Lock, Sun, Moon } from 'lucide-react';
+import { UserPlus, User, Mail, Lock, Sun, Moon, ArrowLeft } from 'lucide-react';
 import logo from '../assets/logo.png';
 import './Signup.css';
 
@@ -58,8 +58,13 @@ const Signup = () => {
         <div className="signup-container">
             <div className="signup-background"></div>
 
+            {/* Back to Home */}
+            <button className="login-back-btn" onClick={() => navigate('/')} aria-label="Back to homepage">
+                <ArrowLeft size={15} /> Home
+            </button>
+
             <div className="signup-card fade-in">
-                {/* Theme Toggle Button (Standard Navbar Style) */}
+                {/* Theme Toggle Button */}
                 <button
                     className="theme-toggle"
                     onClick={toggleTheme}

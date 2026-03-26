@@ -1,40 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { Activity, Mail, Lock, User, Phone, Key, Sun, Moon, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, Phone, Key, Eye, EyeOff, Activity, Settings, Sun, Moon, ArrowLeft } from 'lucide-react';
 import logo from '../assets/logo.png';
 import { patientAuthAPI } from '../utils/api';
+import { useTheme } from '../context/ThemeContext';
 import './Login.css';
 
 const Login = () => {
-    const { isDarkMode, toggleTheme } = useTheme();
     const { login, isAuthenticated, user, loading: authLoading } = useAuth();
+    const { isDarkMode, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
-    const [loginType, setLoginType] = useState('staff'); // 'staff' (includes admin) or 'patient'
+    const [loginType, setLoginType] = useState('staff');
 
     // Staff Login State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [keepSession, setKeepSession] = useState(false);
 
     // Patient Login State
-    const [patientStep, setPatientStep] = useState('request'); // 'request' or 'verify'
-    const [patientData, setPatientData] = useState({
-        name: '',
-        phone: '',
-        email: ''
-    });
+    const [patientStep, setPatientStep] = useState('request');
+    const [patientData, setPatientData] = useState({ name: '', phone: '', email: '' });
     const [otp, setOtp] = useState('');
 
     // Shared State
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Check if user is already logged in and redirect
     useEffect(() => {
         if (!authLoading && isAuthenticated && user) {
-            // User is already logged in, redirect to appropriate dashboard
             if (user.role === 'patient') {
                 navigate('/patient-dashboard', { replace: true });
             } else {
@@ -43,21 +39,16 @@ const Login = () => {
         }
     }, [isAuthenticated, user, authLoading, navigate]);
 
-    // Staff Login Handler
     const handleStaffLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
         try {
-            // Pass loginAs parameter to enforce role check
             const result = await login({ email, password });
             if (result.success) {
-                // Check for forced password change - ONLY for staff, not admins
                 if (result.user && result.user.role === 'staff' && !result.user.isPasswordChanged) {
                     navigate('/change-password');
                 } else {
-                    // Route based on user role
                     if (result.user?.role === 'patient') {
                         navigate('/patient-dashboard');
                     } else {
@@ -67,19 +58,17 @@ const Login = () => {
             } else {
                 setError(result.error);
             }
-        } catch (err) {
+        } catch {
             setError('An unexpected error occurred');
         } finally {
             setLoading(false);
         }
     };
 
-    // Patient OTP Request Handler
     const handleRequestOTP = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
         try {
             await patientAuthAPI.requestOTP({
                 name: patientData.name.trim(),
@@ -94,29 +83,18 @@ const Login = () => {
         }
     };
 
-    // Patient OTP Verify Handler
     const handleVerifyOTP = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
         try {
             const response = await patientAuthAPI.verifyOTP({
                 email: patientData.email.trim(),
                 otp
             });
-
             if (response.data.success) {
-                // Manually set patient session (since AuthContext is built for User model, we might need to adjust it or store patient manually)
-                // For now, let's store simpler patient auth
                 localStorage.setItem('token', response.data.data.token);
                 localStorage.setItem('user', JSON.stringify({ ...response.data.data, role: 'patient' }));
-
-                // Force a reload or update context (assuming AuthContext reads from localStorage on init)
-                // Better: Update AuthContext to handle 'setPatient'. But for now, window.location.reload is a hacky way to ensure AuthContext picks it up if it initializes from storage.
-                // Or assume `login` function can accept a created session. 
-                // Let's rely on stored token and standard flow.
-                // We navigate to /patient-dashboard
                 window.location.href = '/patient-dashboard';
             }
         } catch (err) {
@@ -130,10 +108,9 @@ const Login = () => {
         setPatientData({ ...patientData, [e.target.name]: e.target.value });
     };
 
-    // Show loading state while checking authentication
     if (authLoading) {
         return (
-            <div className="login-container">
+            <div className="login-page">
                 <div className="login-loading">
                     <div className="loading-spinner"></div>
                     <p>Checking authentication...</p>
@@ -142,83 +119,63 @@ const Login = () => {
         );
     }
 
-    // Don't render login form if user is already authenticated (will redirect)
-    if (isAuthenticated && user) {
-        return null;
-    }
+    if (isAuthenticated && user) return null;
 
     return (
-        <div className="login-container">
-            <div className="login-background"></div>
+        <div className="login-page">
 
+            {/* Back to Home */}
+            <button className="login-back-btn" onClick={() => navigate('/')} aria-label="Back to homepage">
+                <ArrowLeft size={15} /> Home
+            </button>
+
+            {/* Theme Toggle */}
+            <button className="login-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            {/* Brand Header */}
+            <div className="login-brand">
+                <img src={logo} alt="Sentinel" className="brand-logo" />
+                <div className="brand-text">
+                    <h1 className="brand-name">Sentinel</h1>
+                    <p className="brand-tagline">CLINICAL GUARDIAN</p>
+                </div>
+            </div>
+
+            {/* Tab Toggle */}
+            <div className="login-tabs">
+                <button
+                    className={`login-tab ${loginType === 'staff' ? 'active' : ''}`}
+                    onClick={() => { setLoginType('staff'); setError(''); }}
+                >
+                    Administrator
+                </button>
+                <button
+                    className={`login-tab ${loginType === 'patient' ? 'active' : ''}`}
+                    onClick={() => { setLoginType('patient'); setError(''); }}
+                >
+                    Patient Portal
+                </button>
+            </div>
+
+            {/* Main Login Card */}
             <div className="login-card fade-in">
-                {/* Back to Landing Page Button */}
-                <button
-                    className="back-to-landing-btn"
-                    onClick={() => navigate('/')}
-                    title="Back to Home"
-                >
-                    <ArrowLeft size={18} />
-                    <span>Back to Home</span>
-                </button>
+                <h2 className="login-title">Welcome Back</h2>
+                <p className="login-subtitle">Secure biometric or credentialed access required.</p>
 
-                {/* Theme Toggle Button (Standard Navbar Style) */}
-                <button
-                    className="theme-toggle"
-                    onClick={toggleTheme}
-                    style={{
-                        position: 'absolute',
-                        top: '1.5rem',
-                        right: '1.5rem',
-                        zIndex: 50
-                    }}
-                    aria-label="Toggle theme"
-                >
-                    {isDarkMode ? (
-                        <Sun size={20} className="theme-icon" />
-                    ) : (
-                        <Moon size={20} className="theme-icon" />
-                    )}
-                </button>
-                <div className="login-header">
-                    <div className="logo-container">
-                        <img src={logo} alt="Sentinel Logo" className="logo-icon" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
-                    </div>
-                    <h1>Sentinel</h1>
-                    <p>AI-Powered Patient Monitoring System</p>
-                </div>
-
-                {/* Role Toggle */}
-                <div className="role-toggle">
-                    <button
-                        className={`role-btn ${loginType === 'staff' ? 'active' : ''}`}
-                        onClick={() => { setLoginType('staff'); setError(''); }}
-                    >
-                        Administrator
-                    </button>
-                    <button
-                        className={`role-btn ${loginType === 'patient' ? 'active' : ''}`}
-                        onClick={() => { setLoginType('patient'); setError(''); }}
-                    >
-                        Patient Portal
-                    </button>
-                </div>
-
-                {error && <div className="alert alert-error fade-in">{error}</div>}
+                {error && <div className="alert alert-error">{error}</div>}
 
                 {/* Staff Login Form */}
                 {loginType === 'staff' && (
                     <form onSubmit={handleStaffLogin} className="login-form">
-
-                        {/* Sub-toggle removed as per request */}
-
                         <div className="form-group">
-                            <label>Email Address</label>
+                            <label>WORK EMAIL</label>
                             <div className="input-wrapper">
-                                <Mail size={20} className="input-icon" />
+                                <Mail size={18} className="input-icon" />
                                 <input
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder="dr.smith@guardian.med"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -227,44 +184,71 @@ const Login = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Password</label>
+                            <div className="label-row">
+                                <label>PASSWORD</label>
+                                <button
+                                    type="button"
+                                    className="visibility-label"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? 'HIDE' : 'VISIBILITY'}
+                                </button>
+                            </div>
                             <div className="input-wrapper">
-                                <Lock size={20} className="input-icon" />
+                                <Lock size={18} className="input-icon" />
                                 <input
-                                    type="password"
-                                    placeholder="Enter your password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    tabIndex={-1}
+                                    aria-label="Toggle password visibility"
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
                             </div>
                         </div>
 
-                        <button type="submit" className="btn-primary btn-lg login-btn" disabled={loading}>
-                            {loading ? 'Signing in...' : 'Sign In'}
+                        <div className="keep-session-row">
+                            <input
+                                type="checkbox"
+                                id="keepSession"
+                                checked={keepSession}
+                                onChange={(e) => setKeepSession(e.target.checked)}
+                            />
+                            <label htmlFor="keepSession">Keep session active for 12 hours</label>
+                        </div>
+
+                        <button type="submit" className="login-btn" disabled={loading}>
+                            {loading ? 'Signing in...' : 'Sign In to Dashboard →'}
                         </button>
 
-                        <div className="login-footer">
-                            <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-                            {/* <div className="demo-credentials" style={{ marginTop: '1rem' }}>
-                                <p><strong>Demo Credentials:</strong></p>
-                                <p>Admin: admin@icu.com / admin123</p>
-                                <p>Staff: staff1@icu.com / staff123</p>
-                            </div> */}
-                        </div>
+                        <p className="login-institutional">
+                            Institutional Access only. Technical issues?{' '}
+                            <Link to="/signup">Contact Clinical Support</Link>
+                        </p>
                     </form>
                 )}
 
                 {/* Patient Login Form */}
                 {loginType === 'patient' && (
-                    <form onSubmit={patientStep === 'request' ? handleRequestOTP : handleVerifyOTP} className="login-form">
-
+                    <form
+                        onSubmit={patientStep === 'request' ? handleRequestOTP : handleVerifyOTP}
+                        className="login-form"
+                    >
                         {patientStep === 'request' ? (
                             <>
                                 <div className="form-group">
-                                    <label>Full Name</label>
+                                    <label>FULL NAME</label>
                                     <div className="input-wrapper">
-                                        <User size={20} className="input-icon" />
+                                        <User size={18} className="input-icon" />
                                         <input
                                             name="name"
                                             placeholder="Your Name"
@@ -275,9 +259,9 @@ const Login = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Phone Number</label>
+                                    <label>PHONE NUMBER</label>
                                     <div className="input-wrapper">
-                                        <Phone size={20} className="input-icon" />
+                                        <Phone size={18} className="input-icon" />
                                         <input
                                             name="phone"
                                             placeholder="Your Phone"
@@ -288,9 +272,9 @@ const Login = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Email Address</label>
+                                    <label>EMAIL ADDRESS</label>
                                     <div className="input-wrapper">
-                                        <Mail size={20} className="input-icon" />
+                                        <Mail size={18} className="input-icon" />
                                         <input
                                             type="email"
                                             name="email"
@@ -301,17 +285,19 @@ const Login = () => {
                                         />
                                     </div>
                                 </div>
-                                <button type="submit" className="btn-primary btn-lg login-btn" disabled={loading}>
-                                    {loading ? 'Sending OTP...' : 'Send OTP Code'}
+                                <button type="submit" className="login-btn" disabled={loading}>
+                                    {loading ? 'Sending OTP...' : 'Send OTP Code →'}
                                 </button>
                             </>
                         ) : (
                             <>
-                                <p className="otp-instruction">Enter the 6-digit code sent to {patientData.email}</p>
+                                <p className="otp-instruction">
+                                    Enter the 6-digit code sent to {patientData.email}
+                                </p>
                                 <div className="form-group">
-                                    <label>One-Time Password (OTP)</label>
+                                    <label>ONE-TIME PASSWORD</label>
                                     <div className="input-wrapper">
-                                        <Key size={20} className="input-icon" />
+                                        <Key size={18} className="input-icon" />
                                         <input
                                             type="text"
                                             placeholder="e.g. 123456"
@@ -322,77 +308,81 @@ const Login = () => {
                                         />
                                     </div>
                                 </div>
-                                <button type="submit" className="btn-primary btn-lg login-btn" disabled={loading}>
-                                    {loading ? 'Verifying...' : 'Verify & Login'}
+                                <button type="submit" className="login-btn" disabled={loading}>
+                                    {loading ? 'Verifying...' : 'Verify & Login →'}
                                 </button>
                                 <button
                                     type="button"
                                     className="back-btn"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setPatientStep('request');
-                                        setError('');
-                                    }}
+                                    onClick={() => { setPatientStep('request'); setError(''); }}
                                 >
                                     Back to Details
                                 </button>
                             </>
                         )}
-
+                        <p className="login-institutional">
+                            Patient access via OTP verification only.{' '}
+                            <Link to="/signup">Need Help?</Link>
+                        </p>
                     </form>
                 )}
+            </div>
 
-                {/* Quick Access Buttons - Bottom of Card */}
-                <div className="quick-access-container">
-                    <div className="quick-access-divider"></div>
-                    <p className="quick-access-label">Quick Demo Access</p>
-                    <div className="quick-access-buttons">
-                        <button
-                            type="button"
-                            className="quick-btn admin"
-                            onClick={() => {
-                                setLoginType('staff');
-                                setEmail('admin@icu.com');
-                                setPassword('admin123');
-                                setError('');
-                            }}
-                        >
-                            <span className="quick-btn-icon"></span>
-                            <span className="quick-btn-text">Admin</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="quick-btn staff"
-                            onClick={() => {
-                                setLoginType('staff');
-                                setEmail('kk@gmail.com');
-                                setPassword('123456');
-                                setError('');
-                            }}
-                        >
-                            <span className="quick-btn-icon"></span>
-                            <span className="quick-btn-text">Staff</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="quick-btn patient"
-                            onClick={() => {
-                                setLoginType('patient');
-                                setPatientStep('request');
-                                setPatientData({
-                                    name: 'Soura',
-                                    email: 'soura@gmail.com',
-                                    phone: '1234567890'
-                                });
-                                setError('');
-                            }}
-                        >
-                            <span className="quick-btn-icon"></span>
-                            <span className="quick-btn-text">Patient</span>
-                        </button>
-                    </div>
+            {/* Quick Demo Access — Role Cards */}
+            <div className="quick-demo-section">
+                <p className="quick-demo-label">QUICK DEMO ACCESS</p>
+                <div className="role-cards">
+                    <button
+                        className="role-card"
+                        type="button"
+                        onClick={() => {
+                            setLoginType('staff');
+                            setEmail('admin@icu.com');
+                            setPassword('admin123');
+                            setError('');
+                        }}
+                    >
+                        <Settings size={18} className="role-card-icon" />
+                        <div className="role-card-info">
+                            <p className="role-card-title">Administrator</p>
+                            <p className="role-card-desc">System-wide control</p>
+                        </div>
+                    </button>
+                    <button
+                        className="role-card"
+                        type="button"
+                        onClick={() => {
+                            setLoginType('staff');
+                            setEmail('kk@gmail.com');
+                            setPassword('123456');
+                            setError('');
+                        }}
+                    >
+                        <Activity size={18} className="role-card-icon" />
+                        <div className="role-card-info">
+                            <p className="role-card-title">Clinical Staff</p>
+                            <p className="role-card-desc">Health monitoring</p>
+                        </div>
+                    </button>
+                    <button
+                        className="role-card"
+                        type="button"
+                        onClick={() => {
+                            setLoginType('patient');
+                            setPatientStep('request');
+                            setPatientData({ name: 'Soura', email: 'soura@gmail.com', phone: '1234567890' });
+                            setError('');
+                        }}
+                    >
+                        <User size={18} className="role-card-icon" />
+                        <div className="role-card-info">
+                            <p className="role-card-title">Patient Portal</p>
+                            <p className="role-card-desc">Health summaries</p>
+                        </div>
+                    </button>
                 </div>
             </div>
+
         </div>
     );
 };
