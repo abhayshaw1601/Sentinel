@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import './VitalsMonitor.css';
 
-const TIME_RANGE_MAP = { live: '24h', '1h': '1h', '12h': '12h', '24h': '24h', readings: '24h' };
+const TIME_RANGE_MAP = { live: '24h', '1h': '1h', '12h': '12h', '24h': '24h' };
 
 const getVitalStatus = (type, value) => {
     if (value == null || value === '') return 'unknown';

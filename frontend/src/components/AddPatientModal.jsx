@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
-import { patientAPI } from '../utils/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, ChevronDown, Search, User } from 'lucide-react';
+import { patientAPI, authAPI } from '../utils/api';
 import './Modal.css';
 
 const AddPatientModal = ({ onClose, onSuccess }) => {
@@ -22,25 +22,60 @@ const AddPatientModal = ({ onClose, onSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    // Doctor dropdown state
+    const [staffList, setStaffList] = useState([]);
+    const [doctorSearch, setDoctorSearch] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const fetchStaff = async () => {
+            try {
+                const res = await authAPI.getMyStaff();
+                setStaffList(res.data.data || []);
+            } catch (err) {
+                console.error('Failed to fetch staff:', err);
+            }
+        };
+        fetchStaff();
+    }, []);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const handleSelectDoctor = (staff) => {
+        setFormData({ ...formData, assignedDoctor: staff.name });
+        setDoctorSearch('');
+        setShowDropdown(false);
+    };
+
+    const filteredStaff = staffList.filter((s) =>
+        s.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
+        (s.designation || '').toLowerCase().includes(doctorSearch.toLowerCase())
+    );
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
         try {
             const dataToSend = {
                 ...formData,
                 age: parseInt(formData.age),
                 allergies: formData.allergies ? formData.allergies.split(',').map(a => a.trim()) : []
             };
-
             await patientAPI.create(dataToSend);
             onSuccess();
         } catch (err) {
@@ -130,7 +165,7 @@ const AddPatientModal = ({ onClose, onSuccess }) => {
                                 required
                             >
                                 <option value="male">Male</option>
-                                <option value="female">Female</option  >
+                                <option value="female">Female</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
@@ -186,14 +221,86 @@ const AddPatientModal = ({ onClose, onSuccess }) => {
                         </div>
                     </div>
 
-                    <div className="form-group">
+                    {/* Assigned Doctor — searchable dropdown */}
+                    <div className="form-group" ref={dropdownRef}>
                         <label>Assigned Doctor *</label>
-                        <input
-                            name="assignedDoctor"
-                            value={formData.assignedDoctor}
-                            onChange={handleChange}
-                            required
-                        />
+                        <div className="doctor-dropdown">
+                            {/* Trigger */}
+                            <button
+                                type="button"
+                                className={`doctor-dropdown-trigger ${showDropdown ? 'open' : ''} ${!formData.assignedDoctor ? 'placeholder' : ''}`}
+                                onClick={() => setShowDropdown((v) => !v)}
+                            >
+                                <User size={16} className="doctor-trigger-icon" />
+                                <span className="doctor-trigger-text">
+                                    {formData.assignedDoctor || 'Select a doctor...'}
+                                </span>
+                                <ChevronDown size={16} className={`doctor-chevron ${showDropdown ? 'rotated' : ''}`} />
+                            </button>
+
+                            {/* Hidden required input for form validation */}
+                            <input
+                                type="text"
+                                name="assignedDoctor"
+                                value={formData.assignedDoctor}
+                                onChange={() => {}}
+                                required
+                                tabIndex={-1}
+                                style={{ position: 'absolute', opacity: 0, height: 0, pointerEvents: 'none' }}
+                            />
+
+                            {/* Dropdown panel */}
+                            {showDropdown && (
+                                <div className="doctor-dropdown-panel">
+                                    <div className="doctor-search-box">
+                                        <Search size={14} className="doctor-search-icon" />
+                                        <input
+                                            type="text"
+                                            className="doctor-search-input"
+                                            placeholder="Search by name or designation..."
+                                            value={doctorSearch}
+                                            onChange={(e) => setDoctorSearch(e.target.value)}
+                                            autoFocus
+                                        />
+                                        {doctorSearch && (
+                                            <button
+                                                type="button"
+                                                className="doctor-search-clear"
+                                                onClick={() => setDoctorSearch('')}
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <ul className="doctor-list">
+                                        {filteredStaff.length > 0 ? (
+                                            filteredStaff.map((staff) => (
+                                                <li
+                                                    key={staff._id}
+                                                    className={`doctor-list-item ${formData.assignedDoctor === staff.name ? 'selected' : ''}`}
+                                                    onClick={() => handleSelectDoctor(staff)}
+                                                >
+                                                    <div className="doctor-list-avatar">
+                                                        {staff.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="doctor-list-info">
+                                                        <span className="doctor-list-name">{staff.name}</span>
+                                                        {staff.designation && (
+                                                            <span className="doctor-list-designation">{staff.designation}</span>
+                                                        )}
+                                                    </div>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <li className="doctor-list-empty">
+                                                {staffList.length === 0 ? 'No staff found' : 'No results match your search'}
+                                            </li>
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="form-group">
