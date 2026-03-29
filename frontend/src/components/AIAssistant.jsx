@@ -135,6 +135,24 @@ const CriticalIndex = ({ cards, insights }) => {
     );
 };
 
+// Convert markdown to HTML for rich card display
+const renderMarkdownToHtml = (text) => {
+    if (!text) return '';
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    // Convert markdown to HTML tags
+    html = html
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')   // **bold**
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')               // *italic*
+        .replace(/__([^_]+)__/g, '<strong>$1</strong>')        // __bold__
+        .replace(/_([^_]+)_/g, '<em>$1</em>')                  // _italic_
+        .replace(/`([^`]+)`/g, '<code>$1</code>')              // `code`
+        .replace(/—/g, '–');
+    return html;
+};
+
 // InsightCard Component with enhanced light/dark mode support
 const InsightCard = ({ severity, message, timestamp }) => {
     const getSeverityConfig = () => {
@@ -185,9 +203,10 @@ const InsightCard = ({ severity, message, timestamp }) => {
                 </div>
                 <span className="insight-timestamp">{timestamp}</span>
             </div>
-            <div className="insight-card-content">
-                {message}
-            </div>
+            <div
+                className="insight-card-content"
+                dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(message) }}
+            />
         </div>
     );
 };
@@ -389,7 +408,7 @@ const AIAssistant = ({ patientId, patient, onStateChange, onCriticalIndexChange,
         }
     };
 
-    // Parse insights into individual cards
+    // Parse insights into individual cards (preserves markdown for rich rendering)
     const parseInsightsToCards = (text) => {
         if (!text) return [];
 
@@ -419,7 +438,7 @@ const AIAssistant = ({ patientId, patient, onStateChange, onCriticalIndexChange,
                     severity = 'medium';
                 }
 
-                // Extract message after severity marker
+                // Extract message after severity marker (keep inner markdown for rendering)
                 const message = trimmed.replace(/^[-•*]\s*\*\*[^*]+\*\*:?\s*/i, '');
 
                 currentCard = {
@@ -427,6 +446,13 @@ const AIAssistant = ({ patientId, patient, onStateChange, onCriticalIndexChange,
                     message,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 };
+            } else if (trimmed.match(/^#{1,6}\s+/) || trimmed.match(/^\*\*[A-Za-z\s]+:\*\*\s*$/)) {
+                // This is a section header (### Action Items:, **Lab Report Summary:**, etc.)
+                // Finalize current card and skip this line
+                if (currentCard && currentCard.message) {
+                    cards.push(currentCard);
+                    currentCard = null;
+                }
             } else if (currentCard) {
                 // Append to current card's message
                 const cleanLine = trimmed.replace(/^[-•*]\s+/, '');

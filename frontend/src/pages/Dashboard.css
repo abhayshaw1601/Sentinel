@@ -85,11 +85,11 @@
     top:0;
     bottom:0;
     width: 3px;
-    background: rgba(56,189,248,0.85);
+    background: rgba(0,212,200,0.90);
 }
 
-.clinical-metric-card.accent-green::before{ background: rgba(52,211,153,0.85); }
-.clinical-metric-card.accent-red::before{ background: rgba(248,113,113,0.85); }
+.clinical-metric-card.accent-green::before{ background: rgba(52,211,153,0.90); }
+.clinical-metric-card.accent-red::before{ background: rgba(248,113,113,0.90); }
 
 .metric-top{
     display:flex;
@@ -381,7 +381,7 @@
     width: 10px;
     height: 10px;
     border-radius: 999px;
-    border: 2px solid rgba(8, 16, 34, 0.90);
+    border: 2px solid #12121f;
 }
 
 .staff-dot.online{ background: #34d399; }
@@ -434,9 +434,9 @@
 
 /* active-shift-banner dark refinement */
 .app-shell.dark .active-shift-banner {
-    background: linear-gradient(135deg, rgba(0,161,228,0.20), rgba(0,122,184,0.14));
-    border: 1px solid rgba(56,189,248,0.25);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.30);
+    background: linear-gradient(135deg, rgba(0,212,200,0.20), rgba(0,168,157,0.13));
+    border: 1px solid rgba(0,212,200,0.28);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,212,200,0.08);
     color: rgba(255,255,255,0.92);
 }
 
@@ -2116,7 +2116,7 @@
    ============================================================ */
 
 .app-shell:not(.dark) .clinical-dashboard {
-    color: #0f172a;
+    color: #1e293b;
 }
 
 /* Header */
@@ -2130,13 +2130,14 @@
     background: #f0fdf4;
     border-color: #bbf7d0;
     color: #059669;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
 /* Metric cards */
 .app-shell:not(.dark) .clinical-metric-card {
     background: #ffffff;
     border-color: #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
 }
 .app-shell:not(.dark) .metric-kicker {
     color: #64748b;
@@ -2145,17 +2146,19 @@
     color: #94a3b8;
 }
 .app-shell:not(.dark) .metric-icon-btn {
-    background: #f1f5f9;
+    background: #ffffff;
     border-color: #e2e8f0;
-    color: #475569;
+    color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 .app-shell:not(.dark) .metric-icon-btn:hover {
-    background: #e2e8f0;
+    background: #f8fafc;
     color: #0f172a;
+    border-color: #cbd5e1;
 }
 .app-shell:not(.dark) .metric-number {
     color: #0f172a;
@@ -2165,7 +2168,7 @@
 .app-shell:not(.dark) .clinical-card {
     background: #ffffff;
     border-color: #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
 }
 .app-shell:not(.dark) .clinical-card h3 {
     color: #0f172a;
@@ -2173,19 +2176,21 @@
 
 /* Tabs */
 .app-shell:not(.dark) .clinical-tabs {
-    background: #f1f5f9;
+    background: #ffffff;
     border-color: #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 .app-shell:not(.dark) .clinical-tab {
-    color: #64748b;
+    color: #94a3b8;
 }
 .app-shell:not(.dark) .clinical-tab:hover {
-    color: #0f172a;
+    color: #475569;
 }
 .app-shell:not(.dark) .clinical-tab.active {
-    background: rgba(0, 91, 150, 0.10);
-    border-color: rgba(0, 161, 228, 0.40);
-    color: #005b96;
+    background: #005b96;
+    border-color: #005b96;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,91,150,0.25);
 }
 
 /* Search */
@@ -2210,6 +2215,7 @@
 .app-shell:not(.dark) .table-wrapper {
     background: transparent;
     border-color: #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .app-shell:not(.dark) .dense-data-table thead,
 .app-shell:not(.dark) .dense-data-table th {
@@ -2218,18 +2224,18 @@
     border-bottom-color: #e2e8f0;
 }
 .app-shell:not(.dark) .dense-data-table td {
-    color: #0f172a;
+    color: #1e293b;
     border-bottom-color: #f1f5f9;
 }
 .app-shell:not(.dark) .dense-data-table tbody tr:hover td {
-    background: rgba(0, 91, 150, 0.04);
+    background: rgba(0, 91, 150, 0.03);
 }
 
 /* Patient cells */
 .app-shell:not(.dark) .patient-initial {
-    background: rgba(0, 161, 228, 0.12);
-    border-color: rgba(0, 161, 228, 0.25);
-    color: #005b96;
+    background: linear-gradient(135deg, #005b96, #0077b6);
+    border-color: transparent;
+    color: #ffffff;
 }
 .app-shell:not(.dark) .patient-id {
     color: #94a3b8;
@@ -2237,18 +2243,20 @@
 
 /* Staff */
 .app-shell:not(.dark) .staff-row {
-    background: #f8fafc;
+    background: #ffffff;
     border-color: #e2e8f0;
-    color: #0f172a;
+    color: #1e293b;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 .app-shell:not(.dark) .staff-row:hover {
-    background: #f1f5f9;
+    background: #f8fafc;
     border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
 }
 .app-shell:not(.dark) .staff-avatar {
-    background: #e2e8f0;
-    border-color: #cbd5e1;
-    color: #0f172a;
+    background: linear-gradient(135deg, #005b96, #0077b6);
+    border-color: transparent;
+    color: #ffffff;
 }
 .app-shell:not(.dark) .staff-dot {
     border-color: #ffffff;

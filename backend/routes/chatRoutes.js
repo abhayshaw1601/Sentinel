@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import ChatHistory from '../models/ChatHistory.js';
 import Patient from '../models/Patient.js';
+import Report from '../models/Report.js';
 import { protect } from '../middleware/auth.js';
 import axios from 'axios';
 import fs from 'fs';
@@ -125,6 +126,16 @@ router.post('/message/:patientId', protect, async (req, res) => {
             timestamp: new Date()
         });
 
+        // Fetch patient reports with extracted data for AI context
+        const reports = await Report.find({ patientId }).sort({ timestamp: -1 }).limit(10);
+        const reportsSummaries = reports.map(r => ({
+            title: r.title,
+            category: r.category,
+            type: r.type,
+            aiSummary: r.aiSummary || r.content?.substring(0, 200) || '',
+            extractedData: r.extractedData || null
+        }));
+
         // Prepare context for AI
         const context = {
             patient: {
@@ -136,6 +147,8 @@ router.post('/message/:patientId', protect, async (req, res) => {
                 allergies: patient.allergies,
                 bloodType: patient.bloodType
             },
+            reportsSummaries,
+            reportsCount: reports.length,
             conversationHistory: chatHistory.messages.slice(-10).map(msg => ({
                 role: msg.role,
                 content: msg.content

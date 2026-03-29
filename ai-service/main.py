@@ -60,6 +60,7 @@ class ReportData(BaseModel):
     content: Optional[str] = ""
     aiExtractedText: Optional[str] = ""
     aiSummary: Optional[str] = ""
+    extractedData: Optional[Dict[str, Any]] = None
     timestamp: str
 
 class InsightsRequest(BaseModel):
@@ -151,10 +152,40 @@ Recent Vital Signs (Last 24 hours):
                     patient_context += f"\n   Content: {report.content[:200]}..."
                 if report.aiSummary:
                     patient_context += f"\n   Summary: {report.aiSummary}"
+                # Include extracted lab data if available
+                if report.extractedData and report.extractedData.get('results'):
+                    patient_context += f"\n   Extracted Lab Values:"
+                    for r in report.extractedData['results']:
+                        param = r.get('parameter', r.get('Parameter', ''))
+                        val = r.get('value', r.get('Value', ''))
+                        unit = r.get('unit', r.get('Unit', ''))
+                        ref = r.get('referenceRange', r.get('Reference Range', ''))
+                        patient_context += f"\n     - {param}: {val} {unit}"
+                        if ref:
+                            patient_context += f" (Ref: {ref})"
         else:
             patient_context += "No reports available."
 
+        # Check if any report has extracted lab data
+        has_lab_data = False
+        if request.reports:
+            for report in request.reports:
+                if report.extractedData and report.extractedData.get('results'):
+                    has_lab_data = True
+                    break
+
         # Create prompt for Gemini (optimized for lower token usage)
+        lab_section = ""
+        if has_lab_data:
+            lab_section = """
+### Lab Report Summary:
+Provide a brief, precise summary (3-5 bullet points) of the extracted blood test results:
+- Highlight any values outside normal reference ranges
+- Note clinical significance of abnormal values
+- Flag any critical lab values requiring urgent attention
+- Use format: "- **Critical/Warning/Info:** [parameter]: [value] [unit] — [brief clinical note]"
+"""
+
         prompt = f"""
 You are an ICU physician assistant AI. Analyze the patient data and provide actionable insights.
 
@@ -176,12 +207,13 @@ Provide analysis in this format with these EXACT severity keywords:
 - **Critical:** [Immediate actions]
 - **Warning:** [Priority tasks]
 - **Info:** [Standard protocols]
-
+{lab_section}
 RULES:
 1. Start each point with "- **Critical:**", "- **Warning:**", or "- **Info:**"
 2. Be specific, cite data points
 3. Keep concise (1-2 sentences)
 4. Include 2-3 Critical items if serious concerns exist
+5. If lab data is available, integrate abnormal values into concerns and recommendations
 """
 
         # Call Gemini API - Using gemini-1.5-flash for higher quota (1,500 req/day vs 20 req/day)
@@ -247,6 +279,15 @@ Recent reports summaries:
         
         for summary in request.context.get('reportsSummaries', []):
             context_str += f"\n- {summary.get('title')}: {summary.get('aiSummary', 'No summary')}"
+            # Include extracted lab values for chat context
+            extracted = summary.get('extractedData')
+            if extracted and extracted.get('results'):
+                context_str += "\n  Extracted Lab Values:"
+                for r in extracted['results']:
+                    param = r.get('parameter', r.get('Parameter', ''))
+                    val = r.get('value', r.get('Value', ''))
+                    unit = r.get('unit', r.get('Unit', ''))
+                    context_str += f"\n    - {param}: {val} {unit}"
 
         # Build conversation history
         conversation = "\n\nPrevious conversation:\n"
@@ -499,6 +540,28 @@ Allergies: {', '.join(patient.get('allergies', [])) if patient.get('allergies') 
 Blood Type: {patient.get('bloodType', 'Unknown')}
 """
 
+        # Add reports and blood test data context
+        reports_summaries = request.context.get('reportsSummaries', [])
+        reports_count = request.context.get('reportsCount', 0)
+        if reports_summaries:
+            context_str += f"\nMedical Reports ({reports_count} on file):\n"
+            for i, summary in enumerate(reports_summaries[:5], 1):
+                context_str += f"\n{i}. {summary.get('title', 'Untitled')} ({summary.get('category', 'N/A')})"
+                if summary.get('aiSummary'):
+                    context_str += f"\n   Summary: {summary['aiSummary']}"
+                # Include extracted lab values (blood report data)
+                extracted = summary.get('extractedData')
+                if extracted and extracted.get('results'):
+                    context_str += "\n   Lab Results:"
+                    for r in extracted['results']:
+                        param = r.get('parameter', r.get('Parameter', ''))
+                        val = r.get('value', r.get('Value', ''))
+                        unit = r.get('unit', r.get('Unit', ''))
+                        ref = r.get('referenceRange', r.get('Reference Range', ''))
+                        context_str += f"\n     - {param}: {val} {unit}"
+                        if ref:
+                            context_str += f" (Ref: {ref})"
+
         # Add conversation history
         conversation = ""
         if request.conversationHistory:
@@ -521,9 +584,10 @@ GUIDELINES:
 1. Be supportive and reassuring
 2. Provide accurate health information
 3. Reference the patient's specific condition or allergies when relevant
-4. If suggesting any medications, ALWAYS check against patient allergies
-5. If the question is serious or requires medical intervention, advise consulting their assigned doctor
-6. Keep responses concise but informative (2-4 paragraphs max)
+4. If lab results are available, reference specific values when answering health questions
+5. If suggesting any medications, ALWAYS check against patient allergies
+6. If the question is serious or requires medical intervention, advise consulting their assigned doctor
+7. Keep responses concise but informative (2-4 paragraphs max)
 
 FORMATTING:
 - Use plain text only

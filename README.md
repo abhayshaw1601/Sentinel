@@ -1,4 +1,5 @@
-# Sentinel
+# Sentinel 
+## [Demo Link](https://sentinel-8b9k.vercel.app/dashboard)
 
 > A comprehensive, AI-powered ICU management system for monitoring patient vitals, managing medical records, and receiving intelligent healthcare insights.
 
@@ -266,10 +267,5 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:5173` to access the application.
+Visit `[Sentinal](https://sentinel-8b9k.vercel.app/dashboard)` to access the application.
 
-## Default Administrative Credentials
-
-Note: Please change these upon deployment.
-- **Email:** admin@icu.com
-- **Password:** admin123
