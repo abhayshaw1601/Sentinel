@@ -317,9 +317,9 @@
 }
 
 .ai-tab.active {
-  color: var(--color-primary);
+  color: #ffffff;
   border-bottom-color: var(--color-primary);
-  background: var(--color-primary-light);
+  background: var(--color-primary);
 }
 
 /* ===== CONTENT AREAS ===== */

@@ -85,11 +85,11 @@
     top:0;
     bottom:0;
     width: 3px;
-    background: rgba(56,189,248,0.85);
+    background: rgba(0,212,200,0.90);
 }
 
-.clinical-metric-card.accent-green::before{ background: rgba(52,211,153,0.85); }
-.clinical-metric-card.accent-red::before{ background: rgba(248,113,113,0.85); }
+.clinical-metric-card.accent-green::before{ background: rgba(52,211,153,0.90); }
+.clinical-metric-card.accent-red::before{ background: rgba(248,113,113,0.90); }
 
 .metric-top{
     display:flex;
@@ -381,7 +381,7 @@
     width: 10px;
     height: 10px;
     border-radius: 999px;
-    border: 2px solid rgba(8, 16, 34, 0.90);
+    border: 2px solid #12121f;
 }
 
 .staff-dot.online{ background: #34d399; }
@@ -434,9 +434,9 @@
 
 /* active-shift-banner dark refinement */
 .app-shell.dark .active-shift-banner {
-    background: linear-gradient(135deg, rgba(0,161,228,0.20), rgba(0,122,184,0.14));
-    border: 1px solid rgba(56,189,248,0.25);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.30);
+    background: linear-gradient(135deg, rgba(0,212,200,0.20), rgba(0,168,157,0.13));
+    border: 1px solid rgba(0,212,200,0.28);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,212,200,0.08);
     color: rgba(255,255,255,0.92);
 }
 

@@ -15,10 +15,10 @@
     align-items: center;
     justify-content: center;
     padding: 2rem 1rem 2.5rem;
-    background: #060b18;
+    background: #0a0a17;
     background-image:
-        radial-gradient(ellipse at 25% 35%, rgba(0,180,220,0.055) 0%, transparent 55%),
-        radial-gradient(ellipse at 75% 65%, rgba(0,80,180,0.055) 0%, transparent 55%);
+        radial-gradient(ellipse at 25% 35%, rgba(0,212,200,0.06) 0%, transparent 58%),
+        radial-gradient(ellipse at 75% 65%, rgba(0,100,160,0.05) 0%, transparent 58%);
     position: relative;
     overflow-x: hidden;
 }
@@ -41,8 +41,8 @@
 .login-loading .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(0,200,224,0.12);
-    border-top-color: #00c8e0;
+    border: 3px solid rgba(0,212,200,0.12);
+    border-top-color: #00d4c8;
     border-radius: 50%;
     animation: spin 0.9s linear infinite;
     flex-shrink: 0;
@@ -112,7 +112,7 @@
     width: 34px;
     height: 34px;
     object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(0,200,224,0.45));
+    filter: drop-shadow(0 0 10px rgba(0,212,200,0.45));
 }
 
 .brand-text { display: flex; flex-direction: column; gap: 2px; }
@@ -130,7 +130,7 @@
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.22em;
-    color: rgba(0,200,224,0.55);
+    color: rgba(0,212,200,0.65);
     margin: 0;
     text-transform: uppercase;
 }
@@ -326,14 +326,14 @@
     padding: 0.875rem;
     font-size: 0.925rem;
     font-weight: 600;
-    color: #ffffff;
-    background: linear-gradient(135deg, #00c8e0 0%, #007ab8 100%);
+    color: #0a0a17;
+    background: linear-gradient(135deg, #00d4c8 0%, #00a99e 100%);
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.18s, box-shadow 0.18s;
     margin-top: 0.15rem;
-    box-shadow: 0 4px 18px rgba(0,180,220,0.28);
+    box-shadow: 0 4px 18px rgba(0,212,200,0.32);
     letter-spacing: 0.01em;
     position: relative;
     overflow: hidden;
@@ -350,8 +350,8 @@
 }
 
 .login-btn:hover:not(:disabled)::before { transform: translateX(100%); }
-.login-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,180,220,0.38); }
-.login-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 4px 14px rgba(0,180,220,0.22); }
+.login-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,212,200,0.42); }
+.login-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 4px 14px rgba(0,212,200,0.24); }
 .login-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
 
 /* ── Institutional footer ── */
@@ -431,16 +431,16 @@
 }
 
 .role-card:hover {
-    background: #0d1830;
-    border-color: rgba(0,200,224,0.20);
+    background: #0d1828;
+    border-color: rgba(0,212,200,0.25);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.40), 0 0 0 1px rgba(0,212,200,0.10);
 }
 
 .role-card:active { transform: translateY(0); }
 
-.role-card-icon { color: #007a90; flex-shrink: 0; transition: color 0.18s; }
-.role-card:hover .role-card-icon { color: #00c8e0; }
+.role-card-icon { color: #009e98; flex-shrink: 0; transition: color 0.18s; }
+.role-card:hover .role-card-icon { color: #00d4c8; }
 
 .role-card-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 
