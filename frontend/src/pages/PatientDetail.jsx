@@ -86,10 +86,10 @@ const PatientDetail = () => {
                     </div>
                 </div>
                 <div className="pd-header-actions">
-                    <button className="pd-btn-transfer">
+                    {/* <button className="pd-btn-transfer">
                         <ArrowRightLeft size={15} />
                         Transfer Patient
-                    </button>
+                    </button> */}
                     {patient.status === 'admitted' && (
                         <button className="pd-btn-discharge" onClick={handleDischarge} disabled={discharging}>
                             <LogOut size={15} />
