@@ -31,6 +31,22 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    // Heartbeat mechanism to keep online status accurate
+    useEffect(() => {
+        let interval;
+        if (user && user.role !== 'patient') {
+            // Ping immediately, then every 1 minute
+            const ping = () => {
+                authAPI.heartbeat().catch(() => {});
+            };
+            ping();
+            interval = setInterval(ping, 60000);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [user]);
+
     const verifyToken = async () => {
         // Skip verification for patients for now (or implement patient-specific verify)
         const storedUser = localStorage.getItem('user');

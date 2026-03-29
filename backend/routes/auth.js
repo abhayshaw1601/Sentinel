@@ -9,7 +9,8 @@ import {
     createStaff,
     getMyStaff,
     updateStaffShift,
-    deleteStaff
+    deleteStaff,
+    heartbeat
 } from '../controllers/authController.js';
 import { protect, authorize } from '../middleware/auth.js';
 
@@ -23,6 +24,7 @@ router.get('/logout', protect, logout);
 router.get('/me', protect, getMe);
 router.put('/updatepassword', protect, updatePassword);
 router.put('/updateprofile', protect, updateProfile);
+router.put('/heartbeat', protect, heartbeat);
 router.put('/staff/:id/shift', protect, authorize('admin'), updateStaffShift);
 router.delete('/staff/:id', protect, authorize('admin'), deleteStaff);
 

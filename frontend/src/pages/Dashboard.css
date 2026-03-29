@@ -385,6 +385,7 @@
 }
 
 .staff-dot.online{ background: #34d399; }
+.staff-dot.away { background: #fbbf24; }
 .staff-dot.offline{ background: rgba(148,163,184,0.9); }
 
 .staff-meta{ flex:1; min-width:0; text-align:left; }
@@ -406,8 +407,29 @@
 @media (max-width: 768px){
     .clinical-metrics{ grid-template-columns: 1fr; }
     .clinical-title{ font-size: 30px; }
-    .clinical-actions{ width: 100%; justify-content:flex-start; }
-    .clinical-search{ max-width: none; min-width: 0; }
+    .clinical-actions{ width: 100%; justify-content:flex-start; margin-top: 10px; }
+    .clinical-search{ max-width: none; min-width: 0; min-height: 48px; }
+    .clinical-search input { height: 48px; font-size: 16px; }
+}
+
+@media (max-width: 640px) {
+    .clinical-header { flex-direction: column; align-items: flex-start; }
+    .system-pill { margin-top: 10px; width: 100%; justify-content: center; }
+    .medical-toolbar { flex-direction: column; align-items: stretch; gap: 15px; }
+    .clinical-tabs { flex-wrap: wrap; width: 100%; }
+    .clinical-tab { flex: 1; text-align: center; }
+    .clinical-card { padding: 15px; }
+    .staff-row { flex-wrap: wrap; }
+    .staff-avatar { width: 36px; height: 36px; }
+    .staff-meta { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .clinical-title { font-size: 24px; }
+    .metric-number { font-size: 32px; }
+    .clinical-card-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .dense-data-table th:nth-child(2),
+    .dense-data-table td:nth-child(2) { display: none; } /* Hide Ward/Bed on very narrow screens */
 }
 
 /* active-shift-banner dark refinement */

@@ -48,7 +48,8 @@ export const authAPI = {
     updatePassword: (data) => api.put('/auth/updatepassword', data),
     updateProfile: (data) => api.put('/auth/updateprofile', data),
     updateStaffShift: (id, data) => api.put(`/auth/staff/${id}/shift`, data),
-    deleteStaff: (id) => api.delete(`/auth/staff/${id}`)
+    deleteStaff: (id) => api.delete(`/auth/staff/${id}`),
+    heartbeat: () => api.put('/auth/heartbeat'),
 };
 
 export const patientAuthAPI = {

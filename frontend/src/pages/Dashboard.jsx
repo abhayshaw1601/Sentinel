@@ -324,7 +324,9 @@ const Dashboard = () => {
                     <div className="clinical-card-head">
                         <div className="staff-head-left">
                             <h3>My Staff Team</h3>
-                            <span className="staff-online-count">{visibleStaff.filter(s => s.isLoggedIn).length} online</span>
+                            <span className="staff-online-count">
+                                {visibleStaff.filter(s => s.isLoggedIn && s.activeSchedule?.shiftName).length} active on shift
+                            </span>
                         </div>
                         {user?.role === 'admin' && (
                             <button className="btn-secondary btn-sm" onClick={() => setShowStaffModal(true)}>
@@ -342,7 +344,11 @@ const Dashboard = () => {
                             >
                                 <div className="staff-avatar">
                                     {staff.name?.charAt(0)?.toUpperCase()}
-                                    <span className={`staff-dot ${staff.isLoggedIn ? 'online' : 'offline'}`} />
+                                    <span className={`staff-dot ${
+                                        staff.isLoggedIn 
+                                            ? (staff.activeSchedule?.shiftName ? 'online' : 'away') 
+                                            : 'offline'
+                                    }`} />
                                 </div>
                                 <div className="staff-meta">
                                     <div className="staff-name">{staff.name}</div>

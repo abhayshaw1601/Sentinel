@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  lastActiveAt: {
+    type: Date,
+    default: Date.now
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

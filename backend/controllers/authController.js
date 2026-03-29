@@ -105,10 +105,20 @@ export const getMyStaff = async (req, res) => {
             role: 'staff'
         }).sort('-createdAt');
 
+        // Determine if staff is actually online (active in the last 2 minutes)
+        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+        
+        const staffWithStatus = staff.map(s => {
+            const staffObj = s.toJSON();
+            // They are online if isLoggedIn is true AND they pinged recently
+            staffObj.isLoggedIn = s.isLoggedIn && s.lastActiveAt > twoMinutesAgo;
+            return staffObj;
+        });
+
         res.status(200).json({
             success: true,
-            count: staff.length,
-            data: staff
+            count: staffWithStatus.length,
+            data: staffWithStatus
         });
     } catch (error) {
         res.status(500).json({
@@ -229,6 +239,25 @@ export const getMe = async (req, res) => {
             success: true,
             data: user
         });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// @desc    Update last active timestamp (heartbeat)
+// @route   PUT /api/auth/heartbeat
+// @access  Private
+export const heartbeat = async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.user._id, { 
+            lastActiveAt: new Date(),
+            isLoggedIn: true // Ensure they are marked logged in if they send a heartbeat
+        });
+        
+        res.status(200).json({ success: true });
     } catch (error) {
         res.status(500).json({
             success: false,
