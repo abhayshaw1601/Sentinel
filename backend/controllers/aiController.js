@@ -59,6 +59,7 @@ export const generateInsights = async (req, res) => {
                 content: r.content,
                 aiExtractedText: r.aiExtractedText,
                 aiSummary: r.aiSummary,
+                extractedData: r.extractedData || null,
                 timestamp: r.timestamp
             }))
         };
@@ -126,7 +127,8 @@ export const chatWithAI = async (req, res) => {
             reportsSummaries: reports.slice(0, 5).map(r => ({
                 title: r.title,
                 category: r.category,
-                aiSummary: r.aiSummary || r.content?.substring(0, 200)
+                aiSummary: r.aiSummary || r.content?.substring(0, 200),
+                extractedData: r.extractedData || null
             }))
         };
 

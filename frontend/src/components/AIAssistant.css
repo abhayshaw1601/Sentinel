@@ -517,6 +517,24 @@
   font-size: 0.95rem;
 }
 
+.insight-card-content strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.insight-card-content em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.insight-card-content code {
+  background: var(--bg-tertiary);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.88rem;
+}
+
 /* ===== CHAT INTERFACE ===== */
 .chat-view {
   height: 100%;
