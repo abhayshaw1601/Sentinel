@@ -87,6 +87,9 @@ class PatientChatMessage(BaseModel):
     context: Dict[str, Any]
     conversationHistory: Optional[List[Dict[str, str]]] = []
 
+class ReportExtractionRequest(BaseModel):
+    image: str  # Base64 encoded image of the report
+
 # Health check
 @app.get("/health")
 async def health_check():
@@ -551,6 +554,83 @@ FORMATTING:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
+
+# Extract report data from an uploaded image
+@app.post("/api/extract-report")
+async def extract_report(request: ReportExtractionRequest):
+    try:
+        if not GEMINI_API_KEY:
+            raise HTTPException(status_code=503, detail="AI service not configured")
+
+        import base64
+        from PIL import Image
+        import io
+
+        # Decode base64 image
+        image_data = base64.b64decode(request.image)
+        image = Image.open(io.BytesIO(image_data))
+
+        # Extraction prompt (ported from extraction.py)
+        prompt = """
+    You are a highly accurate medical data extraction assistant.
+    Look at this blood test report. Extract the patient's information and all the test results.
+    
+    Return ONLY a valid JSON object with the following exact structure:
+    {
+      "patient_info": {
+        "Name": "",
+        "Age": "",
+        "Gender": "",
+        "Date": ""
+      },
+      "results": [
+        {
+          "Parameter": "",
+          "Value": "",
+          "Unit": "",
+          "Reference Range": ""
+        }
+      ]
+    }
+    
+    If a field is missing, leave the string empty.
+    Do not include markdown formatting like ```json. Return ONLY the raw JSON text.
+    """
+
+        # Call Gemini API with image
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content([prompt, image])
+
+        # Parse the response
+        import json
+        clean_text = response.text.replace("```json", "").replace("```", "").strip()
+        data = json.loads(clean_text)
+
+        return {
+            "success": True,
+            "data": {
+                "patient_info": data.get("patient_info", {}),
+                "results": data.get("results", []),
+                "extractedAt": datetime.now().isoformat()
+            }
+        }
+
+    except json.JSONDecodeError as je:
+        print(f"JSON parse error: {je}")
+        raise HTTPException(status_code=422, detail=f"Failed to parse AI response as JSON: {str(je)}")
+    except Exception as e:
+        error_message = str(e)
+        status_code = 500
+
+        if "quota" in error_message.lower() or "429" in error_message:
+            status_code = 429
+            error_message = "API quota exceeded. Please wait for quota reset."
+        elif "api_key" in error_message.lower():
+            status_code = 401
+            error_message = "Invalid API key."
+
+        print(f"Report extraction error: {error_message}")
+        raise HTTPException(status_code=status_code, detail=error_message)
 
 # Run the app
 if __name__ == "__main__":

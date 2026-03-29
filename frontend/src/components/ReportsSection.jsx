@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { reportsAPI } from '../utils/api';
-import { FileText, Upload, Plus, Download, Trash2, Calendar, Tag, AlertCircle } from 'lucide-react';
+import { FileText, Upload, Plus, Download, Trash2, Calendar, Tag, AlertCircle, Zap, Check, X, Edit3, Loader, ChevronDown, ChevronUp } from 'lucide-react';
 import './ReportsSection.css';
 
 const ReportsSection = ({ patientId, readOnly = false }) => {
@@ -9,6 +9,14 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [uploadType, setUploadType] = useState('text'); // 'text' or 'file'
     const [viewingReport, setViewingReport] = useState(null);
+
+    // Extraction state
+    const [extractingId, setExtractingId] = useState(null);
+    const [extractedData, setExtractedData] = useState(null);
+    const [showExtractionModal, setShowExtractionModal] = useState(false);
+    const [extractionReportId, setExtractionReportId] = useState(null);
+    const [savingExtraction, setSavingExtraction] = useState(false);
+    const [expandedExtraction, setExpandedExtraction] = useState({});
 
     const [formData, setFormData] = useState({
         title: '',
@@ -74,7 +82,7 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
             setShowAddForm(false);
             setFormData({
                 title: '',
-                category: 'Lab Results',
+                category: 'lab',
                 content: '',
                 file: null,
                 description: ''
@@ -114,6 +122,131 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
             console.error('Download failed:', error);
             alert('Failed to download file');
         }
+    };
+
+    // --- Extraction Handlers ---
+    const handleExtractData = async (reportId) => {
+        try {
+            setExtractingId(reportId);
+            const response = await reportsAPI.extractData(reportId);
+
+            if (response.data.success) {
+                setExtractedData({
+                    patient_info: response.data.data.patient_info || { Name: '', Age: '', Gender: '', Date: '' },
+                    results: response.data.data.results || []
+                });
+                setExtractionReportId(reportId);
+                setShowExtractionModal(true);
+            }
+        } catch (error) {
+            console.error('Extraction failed:', error);
+            const message = error.response?.data?.message || 'Failed to extract data from report';
+            alert(`Extraction Error: ${message}`);
+        } finally {
+            setExtractingId(null);
+        }
+    };
+
+    const handlePatientInfoChange = (field, value) => {
+        setExtractedData(prev => ({
+            ...prev,
+            patient_info: {
+                ...prev.patient_info,
+                [field]: value
+            }
+        }));
+    };
+
+    const handleResultChange = (index, field, value) => {
+        setExtractedData(prev => {
+            const newResults = [...prev.results];
+            newResults[index] = { ...newResults[index], [field]: value };
+            return { ...prev, results: newResults };
+        });
+    };
+
+    const handleAddRow = () => {
+        setExtractedData(prev => ({
+            ...prev,
+            results: [...prev.results, { Parameter: '', Value: '', Unit: '', 'Reference Range': '' }]
+        }));
+    };
+
+    const handleRemoveRow = (index) => {
+        setExtractedData(prev => ({
+            ...prev,
+            results: prev.results.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleConfirmExtraction = async () => {
+        if (!extractedData || !extractionReportId) return;
+        try {
+            setSavingExtraction(true);
+            await reportsAPI.confirmExtraction(extractionReportId, {
+                patient_info: extractedData.patient_info,
+                results: extractedData.results
+            });
+
+            setShowExtractionModal(false);
+            setExtractedData(null);
+            setExtractionReportId(null);
+            fetchReports();
+        } catch (error) {
+            console.error('Failed to save extraction:', error);
+            alert('Failed to save extracted data. Please try again.');
+        } finally {
+            setSavingExtraction(false);
+        }
+    };
+
+    const toggleExtraction = (reportId) => {
+        setExpandedExtraction(prev => ({
+            ...prev,
+            [reportId]: !prev[reportId]
+        }));
+    };
+
+    // Render saved extracted data inline
+    const renderSavedExtraction = (report) => {
+        if (!report.extractedData?.results?.length) return null;
+        const isExpanded = expandedExtraction[report._id];
+
+        return (
+            <div className="extracted-data-preview">
+                <button
+                    className="extraction-toggle-btn"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExtraction(report._id);
+                    }}
+                >
+                    <Zap size={14} />
+                    <span>Extracted Data ({report.extractedData.results.length} parameters)</span>
+                    {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+                {isExpanded && (
+                    <div className="extraction-inline-data">
+                        <div className="extraction-patient-inline">
+                            <span><strong>Patient:</strong> {report.extractedData.patientInfo?.name || '—'}</span>
+                            <span><strong>Age:</strong> {report.extractedData.patientInfo?.age || '—'}</span>
+                            <span><strong>Gender:</strong> {report.extractedData.patientInfo?.gender || '—'}</span>
+                        </div>
+                        <div className="extraction-results-mini">
+                            {report.extractedData.results.slice(0, 5).map((r, i) => (
+                                <div key={i} className="extraction-result-row-mini">
+                                    <span className="param-name">{r.parameter}</span>
+                                    <span className="param-value">{r.value} {r.unit}</span>
+                                </div>
+                            ))}
+                            {report.extractedData.results.length > 5 && (
+                                <div className="more-params">+{report.extractedData.results.length - 5} more parameters</div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
     };
 
     return (
@@ -301,6 +434,9 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
                                     </div>
                                 )}
 
+                                {/* Show saved extracted data inline */}
+                                {renderSavedExtraction(report)}
+
                                 <div className="report-actions">
                                     <button
                                         className="action-btn view"
@@ -317,6 +453,26 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
                                         >
                                             <Download size={16} />
                                             Download
+                                        </button>
+                                    )}
+                                    {/* Extract Data button for image reports */}
+                                    {!readOnly && report.type === 'image' && (
+                                        <button
+                                            className={`action-btn extract ${extractingId === report._id ? 'extracting' : ''}`}
+                                            onClick={() => handleExtractData(report._id)}
+                                            disabled={extractingId === report._id}
+                                        >
+                                            {extractingId === report._id ? (
+                                                <>
+                                                    <Loader size={16} className="spin" />
+                                                    Extracting...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Zap size={16} />
+                                                    {report.extractedData?.results?.length ? 'Re-Extract' : 'Extract Data'}
+                                                </>
+                                            )}
                                         </button>
                                     )}
                                 </div>
@@ -421,6 +577,63 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
                                 </div>
                             )}
 
+                            {/* Saved Extracted Data (read-only table in modal) */}
+                            {viewingReport.extractedData?.results?.length > 0 && (
+                                <div className="content-section extraction-section-modal">
+                                    <h4><span>🔬</span> Extracted Report Data</h4>
+                                    <div className="extracted-patient-card">
+                                        <div className="epc-item">
+                                            <span className="epc-label">Name</span>
+                                            <span className="epc-value">{viewingReport.extractedData.patientInfo?.name || '—'}</span>
+                                        </div>
+                                        <div className="epc-item">
+                                            <span className="epc-label">Age</span>
+                                            <span className="epc-value">{viewingReport.extractedData.patientInfo?.age || '—'}</span>
+                                        </div>
+                                        <div className="epc-item">
+                                            <span className="epc-label">Gender</span>
+                                            <span className="epc-value">{viewingReport.extractedData.patientInfo?.gender || '—'}</span>
+                                        </div>
+                                        <div className="epc-item">
+                                            <span className="epc-label">Date</span>
+                                            <span className="epc-value">{viewingReport.extractedData.patientInfo?.date || '—'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="extracted-results-table-wrapper">
+                                        <table className="extracted-results-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Parameter</th>
+                                                    <th>Value</th>
+                                                    <th>Unit</th>
+                                                    <th>Reference Range</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {viewingReport.extractedData.results.map((r, i) => (
+                                                    <tr key={i}>
+                                                        <td>{i + 1}</td>
+                                                        <td>{r.parameter}</td>
+                                                        <td className="value-cell">{r.value}</td>
+                                                        <td>{r.unit}</td>
+                                                        <td>{r.referenceRange}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {viewingReport.extractedData.confirmedAt && (
+                                        <div className="extraction-confirmed-badge">
+                                            <Check size={14} />
+                                            Confirmed on {new Date(viewingReport.extractedData.confirmedAt).toLocaleDateString('en-US', {
+                                                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             {/* AI Summary */}
                             {viewingReport.aiSummary && (
                                 <div className="content-section ai-summary-pro">
@@ -435,6 +648,180 @@ const ReportsSection = ({ patientId, readOnly = false }) => {
                                     <p>No content available for this report</p>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Extraction Review Modal */}
+            {showExtractionModal && extractedData && (
+                <div className="modal-overlay" onClick={() => {
+                    setShowExtractionModal(false);
+                    setExtractedData(null);
+                }}>
+                    <div className="extraction-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="extraction-modal-header">
+                            <div className="extraction-modal-title">
+                                <Zap size={22} />
+                                <h3>Review Extracted Data</h3>
+                            </div>
+                            <p className="extraction-modal-subtitle">
+                                AI has extracted the following data from the report image. Please review and edit if needed, then confirm to save.
+                            </p>
+                            <button className="close-btn-pro" onClick={() => {
+                                setShowExtractionModal(false);
+                                setExtractedData(null);
+                            }}>&times;</button>
+                        </div>
+
+                        <div className="extraction-modal-body">
+                            {/* Patient Info Section */}
+                            <div className="extraction-form-section">
+                                <h4>
+                                    <span className="section-icon">👤</span>
+                                    Patient Information
+                                </h4>
+                                <div className="extraction-patient-grid">
+                                    <div className="extraction-field">
+                                        <label>Name</label>
+                                        <input
+                                            type="text"
+                                            value={extractedData.patient_info.Name || ''}
+                                            onChange={(e) => handlePatientInfoChange('Name', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="extraction-field">
+                                        <label>Age</label>
+                                        <input
+                                            type="text"
+                                            value={extractedData.patient_info.Age || ''}
+                                            onChange={(e) => handlePatientInfoChange('Age', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="extraction-field">
+                                        <label>Gender</label>
+                                        <input
+                                            type="text"
+                                            value={extractedData.patient_info.Gender || ''}
+                                            onChange={(e) => handlePatientInfoChange('Gender', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="extraction-field">
+                                        <label>Date</label>
+                                        <input
+                                            type="text"
+                                            value={extractedData.patient_info.Date || ''}
+                                            onChange={(e) => handlePatientInfoChange('Date', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Test Results Section */}
+                            <div className="extraction-form-section">
+                                <div className="extraction-results-header">
+                                    <h4>
+                                        <span className="section-icon">🧪</span>
+                                        Test Results ({extractedData.results.length} parameters)
+                                    </h4>
+                                    <button className="btn-add-row" onClick={handleAddRow}>
+                                        <Plus size={16} /> Add Row
+                                    </button>
+                                </div>
+
+                                <div className="extraction-table-wrapper">
+                                    <table className="extraction-edit-table">
+                                        <thead>
+                                            <tr>
+                                                <th className="th-num">#</th>
+                                                <th className="th-param">Parameter</th>
+                                                <th className="th-value">Value</th>
+                                                <th className="th-unit">Unit</th>
+                                                <th className="th-ref">Reference Range</th>
+                                                <th className="th-action"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {extractedData.results.map((result, index) => (
+                                                <tr key={index}>
+                                                    <td className="td-num">{index + 1}</td>
+                                                    <td>
+                                                        <input
+                                                            type="text"
+                                                            value={result.Parameter || ''}
+                                                            onChange={(e) => handleResultChange(index, 'Parameter', e.target.value)}
+                                                            placeholder="Parameter name"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="text"
+                                                            value={result.Value || ''}
+                                                            onChange={(e) => handleResultChange(index, 'Value', e.target.value)}
+                                                            placeholder="Value"
+                                                            className="value-input"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="text"
+                                                            value={result.Unit || ''}
+                                                            onChange={(e) => handleResultChange(index, 'Unit', e.target.value)}
+                                                            placeholder="Unit"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="text"
+                                                            value={result['Reference Range'] || ''}
+                                                            onChange={(e) => handleResultChange(index, 'Reference Range', e.target.value)}
+                                                            placeholder="e.g. 4.0-11.0"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            className="btn-remove-row"
+                                                            onClick={() => handleRemoveRow(index)}
+                                                            title="Remove row"
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="extraction-modal-footer">
+                            <button
+                                className="btn-secondary"
+                                onClick={() => {
+                                    setShowExtractionModal(false);
+                                    setExtractedData(null);
+                                }}
+                            >
+                                <X size={16} /> Discard
+                            </button>
+                            <button
+                                className="btn-confirm-extraction"
+                                onClick={handleConfirmExtraction}
+                                disabled={savingExtraction}
+                            >
+                                {savingExtraction ? (
+                                    <>
+                                        <Loader size={16} className="spin" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check size={16} />
+                                        Confirm & Save
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

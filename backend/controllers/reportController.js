@@ -382,3 +382,155 @@ export const downloadReport = async (req, res) => {
         });
     }
 };
+
+// @desc    Extract data from report image using AI
+// @route   POST /api/reports/:id/extract
+// @access  Private
+export const extractReportData = async (req, res) => {
+    try {
+        const report = await Report.findById(req.params.id);
+
+        if (!report) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report not found'
+            });
+        }
+
+        if (report.type !== 'image') {
+            return res.status(400).json({
+                success: false,
+                message: 'Data extraction is only supported for image reports'
+            });
+        }
+
+        // Get the file path
+        let filename;
+        if (report.fileUrl.startsWith('http')) {
+            const urlParts = report.fileUrl.split('/');
+            filename = urlParts[urlParts.length - 1];
+        } else {
+            filename = path.basename(report.fileUrl);
+        }
+
+        const filePath = path.join(__dirname, '../uploads', filename);
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report file not found on server'
+            });
+        }
+
+        // Read the file and convert to base64
+        console.log('🔬 Reading file for extraction:', filePath);
+        const imageBuffer = fs.readFileSync(filePath);
+        const base64Image = imageBuffer.toString('base64');
+
+        // Send to AI service for extraction
+        const aiServiceUrl = process.env.AI_SERVICE_URL;
+        if (!aiServiceUrl) {
+            return res.status(503).json({
+                success: false,
+                message: 'AI service URL not configured'
+            });
+        }
+
+        console.log('🤖 Sending to AI service for extraction...');
+        const aiResponse = await axios.post(`${aiServiceUrl}/api/extract-report`, {
+            image: base64Image
+        }, {
+            timeout: 60000  // 60 second timeout for AI processing
+        });
+
+        if (!aiResponse.data.success) {
+            return res.status(500).json({
+                success: false,
+                message: 'AI extraction failed'
+            });
+        }
+
+        console.log('✅ Extraction successful');
+
+        // Return extracted data for user review (NOT saved to DB yet)
+        res.status(200).json({
+            success: true,
+            message: 'Data extracted successfully. Please review and confirm.',
+            data: {
+                reportId: report._id,
+                patient_info: aiResponse.data.data.patient_info,
+                results: aiResponse.data.data.results,
+                extractedAt: aiResponse.data.data.extractedAt
+            }
+        });
+    } catch (error) {
+        console.error('❌ Extraction error:', error.message);
+        const message = error.response?.data?.detail || error.message || 'Extraction failed';
+        res.status(500).json({
+            success: false,
+            message
+        });
+    }
+};
+
+// @desc    Confirm and save extracted data to database
+// @route   POST /api/reports/:id/confirm-extraction
+// @access  Private
+export const confirmExtractedData = async (req, res) => {
+    try {
+        const report = await Report.findById(req.params.id);
+
+        if (!report) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report not found'
+            });
+        }
+
+        const { patient_info, results } = req.body;
+
+        if (!patient_info || !results) {
+            return res.status(400).json({
+                success: false,
+                message: 'patient_info and results are required'
+            });
+        }
+
+        // Save the confirmed extracted data
+        report.extractedData = {
+            patientInfo: {
+                name: patient_info.Name || '',
+                age: patient_info.Age || '',
+                gender: patient_info.Gender || '',
+                date: patient_info.Date || ''
+            },
+            results: results.map(r => ({
+                parameter: r.Parameter || '',
+                value: r.Value || '',
+                unit: r.Unit || '',
+                referenceRange: r['Reference Range'] || ''
+            })),
+            extractedAt: new Date(),
+            confirmedAt: new Date(),
+            confirmedBy: req.user._id
+        };
+
+        report.aiProcessed = true;
+
+        await report.save();
+
+        console.log('✅ Extracted data confirmed and saved for report:', report._id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Extracted data confirmed and saved successfully',
+            data: report
+        });
+    } catch (error) {
+        console.error('❌ Confirm extraction error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

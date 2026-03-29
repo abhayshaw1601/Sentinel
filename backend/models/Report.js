@@ -70,6 +70,24 @@ const reportSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    // Extracted report data (from AI extraction)
+    extractedData: {
+        patientInfo: {
+            name: { type: String, default: '' },
+            age: { type: String, default: '' },
+            gender: { type: String, default: '' },
+            date: { type: String, default: '' }
+        },
+        results: [{
+            parameter: { type: String, default: '' },
+            value: { type: String, default: '' },
+            unit: { type: String, default: '' },
+            referenceRange: { type: String, default: '' }
+        }],
+        extractedAt: { type: Date },
+        confirmedAt: { type: Date },
+        confirmedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    },
     timestamp: {
         type: Date,
         default: Date.now,

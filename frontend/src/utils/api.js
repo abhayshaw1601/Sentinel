@@ -94,6 +94,10 @@ export const reportsAPI = {
         responseType: 'blob',
         timeout: 30000 // 30 second timeout for large files
     }),
+    extractData: (id) => api.post(`/reports/${id}/extract`, {}, {
+        timeout: 60000 // 60 second timeout for AI processing
+    }),
+    confirmExtraction: (id, data) => api.post(`/reports/${id}/confirm-extraction`, data),
 };
 
 // AI APIs
