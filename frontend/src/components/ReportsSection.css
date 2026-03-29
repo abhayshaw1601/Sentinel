@@ -1,10 +1,8 @@
-.reports-section {
+/* =========================================
+Report Viewer Modal - Premium Redesign
+========================================= */
 
-    /* =========================================
-   Report Viewer Modal - Premium Redesign
-   ========================================= */
-
-    /* Modal Container (Shell) */
+/* Modal Container (Shell) */
     .report-modal-pro {
         background: var(--bg-card);
         /* Dark/Light Theme Aware */
@@ -285,8 +283,6 @@
             align-self: flex-start;
         }
     }
-}
-
 .reports-header {
     display: flex;
     justify-content: space-between;
@@ -566,7 +562,7 @@
     color: var(--text-tertiary);
 }
 
-.category {
+.report-meta .category {
     background: var(--color-primary-light);
     color: var(--color-primary);
     padding: 2px 8px;

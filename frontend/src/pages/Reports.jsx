@@ -193,16 +193,78 @@ const Reports = () => {
                                 <div className="meta-card type"><span className="meta-label">Type</span><span className="meta-value" style={{ textTransform: 'capitalize' }}>{viewingReport.type}</span></div>
                             </div>
                             {viewingReport.description && (
-                                <div className="content-section description-section"><h4>Description</h4><p>{viewingReport.description}</p></div>
+                                <div className="content-section description-section">
+                                    <h4>Description</h4><p>{viewingReport.description}</p>
+                                </div>
                             )}
+                            
                             {viewingReport.content && (
-                                <div className="content-section text-content"><h4>Report Content</h4><p>{viewingReport.content}</p></div>
+                                <div className="content-section text-content">
+                                    <h4>Report Content</h4><p>{viewingReport.content}</p>
+                                </div>
                             )}
+                            
+                            {viewingReport.fileUrl && (
+                                <div className="content-section file-section">
+                                    <h4>Attached Document</h4>
+                                    <div className="file-preview-card">
+                                        <div className="file-icon-wrapper">📄</div>
+                                        <div className="file-details">
+                                            <div className="file-name">{viewingReport.fileName}</div>
+                                            <div className="file-size">{(viewingReport.fileSize / 1024).toFixed(2)} KB • {viewingReport.type?.toUpperCase()}</div>
+                                        </div>
+                                        <button className="btn-download-pro" onClick={() => handleDownload(viewingReport._id, viewingReport.fileName)}>
+                                            <Download size={16} /> Download
+                                        </button>
+                                    </div>
+                                    {viewingReport.type === 'image' && (
+                                        <div className="image-preview-container">
+                                            <img src={viewingReport.fileUrl} alt={viewingReport.title} />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {viewingReport.extractedData?.results?.length > 0 && (
+                                <div className="content-section extraction-section-modal">
+                                    <h4><span>🔬</span> Extracted Report Data</h4>
+                                    <div className="extracted-patient-card">
+                                        <div className="epc-item"><span className="epc-label">Name</span><span className="epc-value">{viewingReport.extractedData.patientInfo?.name || '—'}</span></div>
+                                        <div className="epc-item"><span className="epc-label">Age</span><span className="epc-value">{viewingReport.extractedData.patientInfo?.age || '—'}</span></div>
+                                        <div className="epc-item"><span className="epc-label">Gender</span><span className="epc-value">{viewingReport.extractedData.patientInfo?.gender || '—'}</span></div>
+                                        <div className="epc-item"><span className="epc-label">Date</span><span className="epc-value">{viewingReport.extractedData.patientInfo?.date || '—'}</span></div>
+                                    </div>
+                                    <div className="extracted-results-table-wrapper">
+                                        <table className="extracted-results-table">
+                                            <thead>
+                                                <tr><th>#</th><th>Parameter</th><th>Value</th><th>Unit</th><th>Reference Range</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                {viewingReport.extractedData.results.map((r, i) => (
+                                                    <tr key={i}>
+                                                        <td>{i + 1}</td>
+                                                        <td>{r.parameter}</td>
+                                                        <td className="value-cell">{r.value}</td>
+                                                        <td>{r.unit}</td>
+                                                        <td>{r.referenceRange}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
                             {viewingReport.aiSummary && (
-                                <div className="content-section ai-summary-pro"><h4>🤖 AI Summary</h4><p>{viewingReport.aiSummary}</p></div>
+                                <div className="content-section ai-summary-pro">
+                                    <h4><span>🤖</span> AI Summary</h4><p>{viewingReport.aiSummary}</p>
+                                </div>
                             )}
+                            
                             {!viewingReport.content && !viewingReport.fileUrl && (
-                                <div className="empty-state-pro"><p>No content available for this report.</p></div>
+                                <div className="empty-state-pro">
+                                    <p>No content available for this report.</p>
+                                </div>
                             )}
                         </div>
                     </div>
