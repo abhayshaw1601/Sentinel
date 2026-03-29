@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { patientAPI } from '../utils/api';
-import { ArrowRightLeft, LogOut, FileText, Activity, Pill, ClipboardList } from 'lucide-react';
+import { ArrowLeft, LogOut, FileText, Activity, Pill, ClipboardList } from 'lucide-react';
 import VitalsMonitor from '../components/VitalsMonitor';
 import ReportsSection from '../components/ReportsSection';
 import AIAssistant from '../components/AIAssistant';
@@ -86,10 +86,10 @@ const PatientDetail = () => {
                     </div>
                 </div>
                 <div className="pd-header-actions">
-                    {/* <button className="pd-btn-transfer">
-                        <ArrowRightLeft size={15} />
-                        Transfer Patient
-                    </button> */}
+                    <button className="pd-btn-back" onClick={() => navigate('/patients')}>
+                        <ArrowLeft size={15} />
+                        Back to Patients
+                    </button>
                     {patient.status === 'admitted' && (
                         <button className="pd-btn-discharge" onClick={handleDischarge} disabled={discharging}>
                             <LogOut size={15} />
